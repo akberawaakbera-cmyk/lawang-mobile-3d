@@ -1,235 +1,255 @@
-// ======================================================
+// =====================================================
 // LAWANG MOBILE 3D
-// COMPLETE MOBILE GAME CONTROLLER
-// ======================================================
+// GAME CONTROLLER
+// =====================================================
 
 const THREE = window.THREE;
 
-const player = window.gamePlayer;
-const camera = window.gameCamera;
+const player =
+window.gamePlayer;
 
-const parts = window.gameParts;
+const camera =
+window.gameCamera;
 
-const leftLeg = parts.leftLeg;
-const rightLeg = parts.rightLeg;
-const leftArm = parts.leftArm;
-const rightArm = parts.rightArm;
+const scene =
+window.gameScene;
 
-const scene = window.gameScene;
+const parts =
+window.gameParts;
 
-// ======================================================
-// GAME STATE
-// ======================================================
+const leftLeg =
+parts.leftLeg;
+
+const rightLeg =
+parts.rightLeg;
+
+const leftArm =
+parts.leftArm;
+
+const rightArm =
+parts.rightArm;
+
+// =====================================================
+// STATE
+// =====================================================
 
 const state = {
-  hp: 100,
 
-  ammo: 30,
-  maxAmmo: 30,
+  hp:100,
 
-  weaponIndex: 0,
+  ammo:30,
 
-  weapons: [
+  maxAmmo:30,
+
+  score:0,
+
+  weaponIndex:0,
+
+  weapons:[
     {
-      name: "PISTOL",
-      damage: 25,
-      fireDelay: 350
+      name:"PISTOL",
+      damage:25,
+      delay:350
     },
     {
-      name: "RIFLE",
-      damage: 15,
-      fireDelay: 120
+      name:"RIFLE",
+      damage:15,
+      delay:120
     },
     {
-      name: "SHOTGUN",
-      damage: 40,
-      fireDelay: 600
+      name:"SHOTGUN",
+      damage:45,
+      delay:650
     }
   ],
 
-  firing: false,
-  reloading: false,
+  moving:false,
 
-  jumping: false,
-  crouching: false,
-  running: false,
-  moving: false,
+  running:false,
 
-  jumpVelocity: 0,
+  crouching:false,
 
-  animation: 0,
+  jumping:false,
 
-  score: 0
+  jumpVelocity:0,
+
+  firing:false,
+
+  reloading:false,
+
+  animation:0
+
 };
 
-// ======================================================
-// UI
-// ======================================================
+// =====================================================
+// HUD
+// =====================================================
 
-const hudWeapon =
-  document.getElementById("weapon");
+const hp =
+document.getElementById("hp");
 
-const hudHP =
-  document.getElementById("hp");
+const weapon =
+document.getElementById("weapon");
 
-const hudScore =
-  document.getElementById("score");
+const ammo =
+document.getElementById("ammo");
+
+const score =
+document.getElementById("score");
 
 const status =
-  document.getElementById("status");
+document.getElementById("status");
 
-function updateHUD() {
+function updateHUD(){
 
-  if (hudWeapon) {
-    hudWeapon.textContent =
-      state.weapons[state.weaponIndex].name +
-      " | " +
-      state.ammo;
-  }
+  hp.textContent =
+    state.hp;
 
-  if (hudHP) {
-    hudHP.textContent =
-      state.hp;
-  }
+  weapon.textContent =
+    state.weapons[
+      state.weaponIndex
+    ].name;
 
-  if (hudScore) {
-    hudScore.textContent =
-      state.score;
-  }
+  ammo.textContent =
+    state.ammo;
+
+  score.textContent =
+    state.score;
 }
 
-// ======================================================
+// =====================================================
 // JOYSTICK
-// ======================================================
+// =====================================================
 
 const joystick =
-  document.getElementById("joystick");
+document.getElementById(
+  "joystick"
+);
 
-const joystickKnob =
-  document.getElementById(
-    "joystickKnob"
-  );
+const knob =
+document.getElementById(
+  "joystickKnob"
+);
 
-let joystickX = 0;
-let joystickY = 0;
+let joystickX=0;
+let joystickY=0;
 
-let joystickActive = false;
+let joystickActive=false;
 
-const maxDistance = 39;
+const maxDistance=39;
 
-function setJoystick(x, y) {
+function moveJoystick(
+  x,
+  y
+){
 
   const rect =
     joystick.getBoundingClientRect();
 
-  const centerX =
+  const cx =
     rect.left +
-    rect.width / 2;
+    rect.width/2;
 
-  const centerY =
+  const cy =
     rect.top +
-    rect.height / 2;
+    rect.height/2;
 
   let dx =
-    x - centerX;
+    x-cx;
 
   let dy =
-    y - centerY;
+    y-cy;
 
   const distance =
     Math.sqrt(
-      dx * dx +
-      dy * dy
+      dx*dx+
+      dy*dy
     );
 
-  if (
-    distance > maxDistance
-  ) {
+  if(
+    distance>maxDistance
+  ){
 
     dx =
-      dx / distance *
+      dx/distance*
       maxDistance;
 
     dy =
-      dy / distance *
+      dy/distance*
       maxDistance;
   }
 
-  joystickKnob.style.transform =
+  knob.style.transform =
     `translate(${dx}px,${dy}px)`;
 
   joystickX =
-    dx / maxDistance;
+    dx/maxDistance;
 
   joystickY =
-    dy / maxDistance;
+    dy/maxDistance;
 }
 
-function resetJoystick() {
+function resetJoystick(){
 
-  joystickActive = false;
+  joystickActive=false;
 
-  joystickX = 0;
-  joystickY = 0;
+  joystickX=0;
 
-  joystickKnob.style.transform =
-    "translate(0px,0px)";
+  joystickY=0;
+
+  knob.style.transform =
+    "translate(0,0)";
 }
 
 joystick.addEventListener(
   "touchstart",
-  event => {
+  e=>{
 
-    event.preventDefault();
+    e.preventDefault();
 
-    joystickActive = true;
+    joystickActive=true;
 
-    const touch =
-      event.touches[0];
+    const t=e.touches[0];
 
-    setJoystick(
-      touch.clientX,
-      touch.clientY
+    moveJoystick(
+      t.clientX,
+      t.clientY
     );
+
   },
-  {
-    passive: false
-  }
+  {passive:false}
 );
 
 joystick.addEventListener(
   "touchmove",
-  event => {
+  e=>{
 
-    if (!joystickActive)
+    if(!joystickActive)
       return;
 
-    event.preventDefault();
+    e.preventDefault();
 
-    const touch =
-      event.touches[0];
+    const t=e.touches[0];
 
-    setJoystick(
-      touch.clientX,
-      touch.clientY
+    moveJoystick(
+      t.clientX,
+      t.clientY
     );
+
   },
-  {
-    passive: false
-  }
+  {passive:false}
 );
 
 joystick.addEventListener(
   "touchend",
-  event => {
+  e=>{
 
-    event.preventDefault();
+    e.preventDefault();
 
     resetJoystick();
+
   },
-  {
-    passive: false
-  }
+  {passive:false}
 );
 
 joystick.addEventListener(
@@ -237,513 +257,209 @@ joystick.addEventListener(
   resetJoystick
 );
 
-// ======================================================
-// CREATE MOBILE BUTTON
-// ======================================================
+// =====================================================
+// BUTTON HELPER
+// =====================================================
 
-function createGameButton(
+function button(
   id,
-  text,
-  css
-) {
+  action
+){
 
-  let old =
+  const element =
     document.getElementById(id);
 
-  if (old) {
-    old.remove();
-  }
+  element.addEventListener(
+    "touchstart",
+    e=>{
 
-  const button =
-    document.createElement("div");
+      e.preventDefault();
 
-  button.id = id;
+      action();
 
-  button.textContent = text;
-
-  button.style.position =
-    "fixed";
-
-  button.style.width =
-    css.width || "68px";
-
-  button.style.height =
-    css.height || "68px";
-
-  button.style.right =
-    css.right || "auto";
-
-  button.style.left =
-    css.left || "auto";
-
-  button.style.bottom =
-    css.bottom || "auto";
-
-  button.style.top =
-    css.top || "auto";
-
-  button.style.borderRadius =
-    "50%";
-
-  button.style.border =
-    "2px solid rgba(255,255,255,0.5)";
-
-  button.style.background =
-    css.background ||
-    "rgba(255,255,255,0.15)";
-
-  button.style.color =
-    "white";
-
-  button.style.display =
-    "flex";
-
-  button.style.alignItems =
-    "center";
-
-  button.style.justifyContent =
-    "center";
-
-  button.style.fontWeight =
-    "bold";
-
-  button.style.fontSize =
-    css.fontSize || "13px";
-
-  button.style.zIndex =
-    "500";
-
-  button.style.touchAction =
-    "none";
-
-  button.style.userSelect =
-    "none";
-
-  document.body.appendChild(
-    button
+    },
+    {passive:false}
   );
 
-  return button;
+  element.addEventListener(
+    "click",
+    e=>{
+
+      e.preventDefault();
+
+      action();
+
+    }
+  );
+
+  return element;
 }
 
-// ======================================================
-// BUTTONS
-// ======================================================
-
-const fireButton =
-  createGameButton(
-    "lawangFire",
-    "FIRE",
-    {
-      right: "25px",
-      bottom: "45px",
-      width: "92px",
-      height: "92px",
-      background:
-        "rgba(220,40,40,0.45)",
-      fontSize: "17px"
-    }
-  );
-
-const jumpButton =
-  createGameButton(
-    "lawangJump",
-    "JUMP",
-    {
-      right: "130px",
-      bottom: "45px"
-    }
-  );
-
-const reloadButton =
-  createGameButton(
-    "lawangReload",
-    "RELOAD",
-    {
-      right: "145px",
-      bottom: "125px",
-      width: "62px",
-      height: "62px",
-      fontSize: "10px"
-    }
-  );
-
-const gunButton =
-  createGameButton(
-    "lawangGun",
-    "GUN",
-    {
-      right: "35px",
-      bottom: "155px",
-      fontSize: "12px"
-    }
-  );
-
-const crouchButton =
-  createGameButton(
-    "lawangCrouch",
-    "CROUCH",
-    {
-      right: "220px",
-      bottom: "45px",
-      width: "60px",
-      height: "60px",
-      fontSize: "10px"
-    }
-  );
-
-const runButton =
-  document.getElementById(
-    "runButton"
-  );
-
-// ======================================================
+// =====================================================
 // FIRE
-// ======================================================
+// =====================================================
 
-function fire() {
+function fire(){
 
-  if (state.reloading)
+  if(
+    state.reloading ||
+    state.firing
+  )
     return;
 
-  if (state.ammo <= 0) {
+  if(
+    state.ammo<=0
+  ){
 
     reload();
 
     return;
   }
 
-  if (state.firing)
-    return;
-
-  state.firing = true;
+  state.firing=true;
 
   state.ammo--;
 
   updateHUD();
 
-  // weapon kick
+  /* recoil */
 
-  player.rotation.x =
-    -0.04;
+  player.position.y +=
+    .04;
 
-  setTimeout(() => {
+  setTimeout(
+    ()=>{
+      player.position.y -=
+        .04;
+    },
+    60
+  );
 
-    player.rotation.x =
-      0;
+  /* arm animation */
 
-  }, 80);
-
-  // shooting animation
-
-  leftArm.rotation.x =
+  leftArm.rotation.x=
     -0.8;
 
-  rightArm.rotation.x =
+  rightArm.rotation.x=
     -0.8;
 
-  setTimeout(() => {
+  setTimeout(
+    ()=>{
 
-    leftArm.rotation.x = 0;
-    rightArm.rotation.x = 0;
+      leftArm.rotation.x=0;
 
-  }, 100);
+      rightArm.rotation.x=0;
 
-  // find enemy
-
-  shootEnemy();
-
-  setTimeout(() => {
-
-    state.firing = false;
-
-  }, state.weapons[
-    state.weaponIndex
-  ].fireDelay);
-}
-
-// ======================================================
-// ENEMY SYSTEM
-// ======================================================
-
-const enemies = [];
-
-function createEnemy(
-  x,
-  z
-) {
-
-  const enemy =
-    new THREE.Group();
-
-  const material =
-    new THREE.MeshStandardMaterial({
-      color: 0xd93636
-    });
-
-  const enemyBody =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        0.9,
-        1.6,
-        0.55
-      ),
-      material
-    );
-
-  enemyBody.position.y =
-    1.8;
-
-  enemy.add(
-    enemyBody
+    },
+    100
   );
 
-  const enemyHead =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        0.4,
-        16,
-        16
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0xe0a078
-      })
-    );
+  /* hit enemy */
 
-  enemyHead.position.y =
-    3;
+  damageEnemy();
 
-  enemy.add(
-    enemyHead
-  );
+  setTimeout(
+    ()=>{
 
-  enemy.position.set(
-    x,
-    0,
-    z
-  );
+      state.firing=false;
 
-  enemy.userData.hp =
-    100;
-
-  enemy.userData.alive =
-    true;
-
-  scene.add(
-    enemy
-  );
-
-  enemies.push(
-    enemy
-  );
-}
-
-createEnemy(
-  8,
-  -10
-);
-
-createEnemy(
-  -10,
-  -15
-);
-
-createEnemy(
-  15,
-  12
-);
-
-createEnemy(
-  -18,
-  10
-);
-
-// ======================================================
-// SHOOT ENEMY
-// ======================================================
-
-function shootEnemy() {
-
-  let closest = null;
-
-  let closestDistance =
-    Infinity;
-
-  for (
-    const enemy of enemies
-  ) {
-
-    if (
-      !enemy.userData.alive
-    )
-      continue;
-
-    const distance =
-      player.position.distanceTo(
-        enemy.position
-      );
-
-    if (
-      distance <
-      closestDistance
-    ) {
-
-      closestDistance =
-        distance;
-
-      closest =
-        enemy;
-    }
-  }
-
-  if (
-    !closest ||
-    closestDistance > 30
-  )
-    return;
-
-  const damage =
+    },
     state.weapons[
       state.weaponIndex
-    ].damage;
-
-  closest.userData.hp -=
-    damage;
-
-  if (
-    closest.userData.hp <= 0
-  ) {
-
-    closest.userData.alive =
-      false;
-
-    closest.visible =
-      false;
-
-    state.score +=
-      100;
-
-    updateHUD();
-
-  } else {
-
-    closest.scale.set(
-      1.15,
-      1.15,
-      1.15
-    );
-
-    setTimeout(() => {
-
-      closest.scale.set(
-        1,
-        1,
-        1
-      );
-
-    }, 100);
-  }
+    ].delay
+  );
 }
 
-// ======================================================
+// =====================================================
 // RELOAD
-// ======================================================
+// =====================================================
 
-function reload() {
+function reload(){
 
-  if (
+  if(
     state.reloading ||
-    state.ammo === state.maxAmmo
+    state.ammo===
+    state.maxAmmo
   )
     return;
 
-  state.reloading =
-    true;
+  state.reloading=true;
 
-  if (status) {
-    status.textContent =
-      "RELOADING...";
-  }
+  status.textContent=
+    "RELOADING...";
 
-  setTimeout(() => {
+  setTimeout(
+    ()=>{
 
-    state.ammo =
-      state.maxAmmo;
+      state.ammo=
+        state.maxAmmo;
 
-    state.reloading =
-      false;
+      state.reloading=
+        false;
 
-    updateHUD();
-
-    if (status) {
-      status.textContent =
+      status.textContent=
         "READY";
-    }
 
-  }, 1200);
+      updateHUD();
+
+    },
+    1200
+  );
 }
 
-// ======================================================
-// WEAPON SWITCH
-// ======================================================
+// =====================================================
+// SWITCH GUN
+// =====================================================
 
-function switchWeapon() {
+function switchGun(){
 
-  if (state.reloading)
+  if(state.reloading)
     return;
 
   state.weaponIndex++;
 
-  if (
-    state.weaponIndex >=
+  if(
+    state.weaponIndex>=
     state.weapons.length
-  ) {
+  ){
 
-    state.weaponIndex = 0;
+    state.weaponIndex=0;
   }
 
   updateHUD();
 
-  if (status) {
+  status.textContent=
+    state.weapons[
+      state.weaponIndex
+    ].name;
 
-    status.textContent =
-      state.weapons[
-        state.weaponIndex
-      ].name;
-  }
-
-  setTimeout(() => {
-
-    if (status)
-      status.textContent =
+  setTimeout(
+    ()=>{
+      status.textContent=
         "READY";
-
-  }, 700);
+    },
+    600
+  );
 }
 
-// ======================================================
+// =====================================================
 // JUMP
-// ======================================================
+// =====================================================
 
-function jump() {
+function jump(){
 
-  if (state.jumping)
+  if(state.jumping)
     return;
 
-  state.jumping =
-    true;
+  state.jumping=true;
 
-  state.jumpVelocity =
-    0.18;
+  state.jumpVelocity=
+    .18;
 }
 
-// ======================================================
-// JUMP PHYSICS
-// ======================================================
+function updateJump(){
 
-function updateJump() {
-
-  if (
+  if(
     !state.jumping
   )
     return;
@@ -752,403 +468,313 @@ function updateJump() {
     state.jumpVelocity;
 
   state.jumpVelocity -=
-    0.012;
+    .012;
 
-  if (
-    player.position.y <= 0
-  ) {
+  if(
+    player.position.y<=0
+  ){
 
-    player.position.y =
-      0;
+    player.position.y=0;
 
-    state.jumpVelocity =
-      0;
+    state.jumpVelocity=0;
 
-    state.jumping =
-      false;
+    state.jumping=false;
   }
 }
 
-// ======================================================
+// =====================================================
 // CROUCH
-// ======================================================
+// =====================================================
 
-function toggleCrouch() {
+function crouch(){
 
-  state.crouching =
+  state.crouching=
     !state.crouching;
 
-  if (
+  if(
     state.crouching
-  ) {
+  ){
 
-    player.scale.y =
-      0.65;
+    player.scale.y=.65;
 
-    crouchButton.style.background =
-      "rgba(35,136,255,0.7)";
+  }else{
 
-  } else {
-
-    player.scale.y =
-      1;
-
-    crouchButton.style.background =
-      "rgba(255,255,255,0.15)";
+    player.scale.y=1;
   }
 }
 
-// ======================================================
+// =====================================================
 // RUN
-// ======================================================
+// =====================================================
 
-function startRun(
-  event
-) {
+const runButton =
+document.getElementById(
+  "run"
+);
 
-  event.preventDefault();
+runButton.addEventListener(
+  "touchstart",
+  e=>{
 
-  state.running =
-    true;
+    e.preventDefault();
 
-  if (runButton) {
+    state.running=true;
 
-    runButton.style.background =
-      "rgba(35,136,255,0.75)";
+    runButton.style.background=
+      "rgba(35,136,255,.8)";
+
+  },
+  {passive:false}
+);
+
+runButton.addEventListener(
+  "touchend",
+  e=>{
+
+    e.preventDefault();
+
+    state.running=false;
+
+    runButton.style.background=
+      "rgba(35,136,255,.35)";
+
+  },
+  {passive:false}
+);
+
+runButton.addEventListener(
+  "touchcancel",
+  ()=>{
+    state.running=false;
   }
-}
+);
 
-function stopRun(
-  event
-) {
+// =====================================================
+// BUTTONS
+// =====================================================
 
-  event.preventDefault();
-
-  state.running =
-    false;
-
-  if (runButton) {
-
-    runButton.style.background =
-      "rgba(35,136,255,0.35)";
-  }
-}
-
-if (runButton) {
-
-  runButton.addEventListener(
-    "touchstart",
-    startRun,
-    {
-      passive: false
-    }
-  );
-
-  runButton.addEventListener(
-    "touchend",
-    stopRun,
-    {
-      passive: false
-    }
-  );
-
-  runButton.addEventListener(
-    "touchcancel",
-    stopRun,
-    {
-      passive: false
-    }
-  );
-}
-
-// ======================================================
-// BUTTON TOUCH HELPERS
-// ======================================================
-
-function pressButton(
-  button,
-  action
-) {
-
-  button.addEventListener(
-    "touchstart",
-    event => {
-
-      event.preventDefault();
-
-      action();
-
-    },
-    {
-      passive: false
-    }
-  );
-
-  button.addEventListener(
-    "click",
-    event => {
-
-      event.preventDefault();
-
-      action();
-
-    }
-  );
-}
-
-pressButton(
-  fireButton,
+button(
+  "fire",
   fire
 );
 
-pressButton(
-  jumpButton,
+button(
+  "jump",
   jump
 );
 
-pressButton(
-  reloadButton,
+button(
+  "reload",
   reload
 );
 
-pressButton(
-  gunButton,
-  switchWeapon
+button(
+  "gun",
+  switchGun
 );
 
-pressButton(
-  crouchButton,
-  toggleCrouch
+button(
+  "crouch",
+  crouch
 );
 
-// ======================================================
+// =====================================================
 // CAMERA
-// ======================================================
+// =====================================================
 
 const cameraArea =
-  document.getElementById(
-    "cameraArea"
-  );
+document.getElementById(
+  "cameraArea"
+);
 
-let cameraTouch =
-  null;
+let cameraTouch=null;
 
-let cameraYaw =
-  0;
+let yaw=0;
 
-let cameraPitch =
-  0.35;
+let pitch=.35;
 
-const cameraDistance =
-  7;
+const distance=7;
 
-const cameraHeight =
-  3.8;
+cameraArea.addEventListener(
+  "touchstart",
+  e=>{
 
-if (cameraArea) {
+    if(
+      e.touches.length!==1
+    )
+      return;
 
-  cameraArea.addEventListener(
-    "touchstart",
-    event => {
+    const t=e.touches[0];
 
-      if (
-        event.touches.length !== 1
-      )
-        return;
+    cameraTouch={
+      x:t.clientX,
+      y:t.clientY
+    };
 
-      const touch =
-        event.touches[0];
+  },
+  {passive:true}
+);
 
-      cameraTouch = {
-        x: touch.clientX,
-        y: touch.clientY
-      };
+cameraArea.addEventListener(
+  "touchmove",
+  e=>{
 
-    },
-    {
-      passive: true
-    }
-  );
+    if(!cameraTouch)
+      return;
 
-  cameraArea.addEventListener(
-    "touchmove",
-    event => {
+    const t=e.touches[0];
 
-      if (!cameraTouch)
-        return;
+    const dx=
+      t.clientX-
+      cameraTouch.x;
 
-      const touch =
-        event.touches[0];
+    const dy=
+      t.clientY-
+      cameraTouch.y;
 
-      const dx =
-        touch.clientX -
-        cameraTouch.x;
+    yaw -=
+      dx*.008;
 
-      const dy =
-        touch.clientY -
-        cameraTouch.y;
+    pitch -=
+      dy*.004;
 
-      cameraYaw -=
-        dx * 0.008;
+    pitch=
+      Math.max(
+        .05,
+        Math.min(
+          .8,
+          pitch
+        )
+      );
 
-      cameraPitch -=
-        dy * 0.004;
+    cameraTouch.x=
+      t.clientX;
 
-      cameraPitch =
-        Math.max(
-          0.05,
-          Math.min(
-            0.8,
-            cameraPitch
-          )
-        );
+    cameraTouch.y=
+      t.clientY;
 
-      cameraTouch.x =
-        touch.clientX;
+  },
+  {passive:true}
+);
 
-      cameraTouch.y =
-        touch.clientY;
-    },
-    {
-      passive: true
-    }
-  );
+cameraArea.addEventListener(
+  "touchend",
+  ()=>{
+    cameraTouch=null;
+  }
+);
 
-  cameraArea.addEventListener(
-    "touchend",
-    () => {
-
-      cameraTouch =
-        null;
-
-    }
-  );
-}
-
-// ======================================================
+// =====================================================
 // CAMERA UPDATE
-// ======================================================
+// =====================================================
 
-function updateCamera() {
+function updateCamera(){
 
   const target =
     new THREE.Vector3(
       player.position.x,
-      player.position.y + 2,
+      player.position.y+2,
       player.position.z
     );
 
-  const horizontal =
-    Math.cos(cameraYaw) *
-    cameraDistance;
+  camera.position.x=
+    player.position.x+
+    Math.cos(yaw)*
+    distance;
 
-  const depth =
-    Math.sin(cameraYaw) *
-    cameraDistance;
+  camera.position.z=
+    player.position.z+
+    Math.sin(yaw)*
+    distance;
 
-  camera.position.x =
-    player.position.x +
-    horizontal;
-
-  camera.position.z =
-    player.position.z +
-    depth;
-
-  camera.position.y =
-    player.position.y +
-    cameraHeight +
-    cameraPitch * 2;
+  camera.position.y=
+    player.position.y+
+    3.8+
+    pitch*2;
 
   camera.lookAt(
     target
   );
 }
 
-// ======================================================
+// =====================================================
 // PLAYER MOVEMENT
-// ======================================================
+// =====================================================
 
-function updatePlayer() {
+function updatePlayer(){
 
-  const inputX =
-    joystickX;
-
-  const inputY =
-    joystickY;
-
-  const magnitude =
+  const magnitude=
     Math.sqrt(
-      inputX * inputX +
-      inputY * inputY
+      joystickX*
+      joystickX+
+      joystickY*
+      joystickY
     );
 
-  state.moving =
-    magnitude > 0.08;
+  state.moving=
+    magnitude>.08;
 
-  if (
+  if(
     !state.moving
   )
     return;
 
-  let speed =
+  let speed=
     state.running
-      ? 0.11
-      : 0.055;
+      ? .11
+      : .055;
 
-  if (
+  if(
     state.crouching
-  ) {
+  )
+    speed*=.5;
 
-    speed *=
-      0.5;
-  }
+  const forwardX=
+    -Math.sin(yaw);
 
-  const forwardX =
-    -Math.sin(cameraYaw);
+  const forwardZ=
+    -Math.cos(yaw);
 
-  const forwardZ =
-    -Math.cos(cameraYaw);
+  const rightX=
+    Math.cos(yaw);
 
-  const rightX =
-    Math.cos(cameraYaw);
+  const rightZ=
+    -Math.sin(yaw);
 
-  const rightZ =
-    -Math.sin(cameraYaw);
+  let moveX=
+    forwardX*
+    -joystickY+
+    rightX*
+    joystickX;
 
-  let moveX =
-    forwardX * -inputY +
-    rightX * inputX;
+  let moveZ=
+    forwardZ*
+    -joystickY+
+    rightZ*
+    joystickX;
 
-  let moveZ =
-    forwardZ * -inputY +
-    rightZ * inputX;
-
-  const length =
+  const length=
     Math.sqrt(
-      moveX * moveX +
-      moveZ * moveZ
+      moveX*moveX+
+      moveZ*moveZ
     );
 
-  if (
-    length > 0
-  ) {
+  if(
+    length>0
+  ){
 
-    moveX /=
-      length;
+    moveX/=length;
 
-    moveZ /=
-      length;
+    moveZ/=length;
   }
 
   player.position.x +=
-    moveX * speed;
+    moveX*speed;
 
   player.position.z +=
-    moveZ * speed;
+    moveZ*speed;
 
-  // Character faces movement
-
-  player.rotation.y =
+  player.rotation.y=
     Math.atan2(
       moveX,
       moveZ
@@ -1156,68 +782,196 @@ function updatePlayer() {
 
   state.animation +=
     state.running
-      ? 0.30
-      : 0.18;
+      ? .30
+      : .18;
 }
 
-// ======================================================
-// WALK / RUN ANIMATION
-// ======================================================
+// =====================================================
+// WALK ANIMATION
+// =====================================================
 
-function updateAnimation() {
+function animation(){
 
-  if (
+  if(
     !state.moving
-  ) {
+  ){
 
-    leftLeg.rotation.x *=
-      0.8;
+    leftLeg.rotation.x*=.8;
 
-    rightLeg.rotation.x *=
-      0.8;
+    rightLeg.rotation.x*=.8;
 
-    leftArm.rotation.x *=
-      0.8;
+    leftArm.rotation.x*=.8;
 
-    rightArm.rotation.x *=
-      0.8;
+    rightArm.rotation.x*=.8;
 
     return;
   }
 
-  const amount =
+  const amount=
     state.running
-      ? 0.75
-      : 0.45;
+      ? .75
+      : .45;
 
-  const swing =
+  const swing=
     Math.sin(
       state.animation
-    ) * amount;
+    )*amount;
 
-  leftLeg.rotation.x =
+  leftLeg.rotation.x=
     swing;
 
-  rightLeg.rotation.x =
+  rightLeg.rotation.x=
     -swing;
 
-  leftArm.rotation.x =
-    -swing * 0.7;
+  leftArm.rotation.x=
+    -swing*.7;
 
-  rightArm.rotation.x =
-    swing * 0.7;
+  rightArm.rotation.x=
+    swing*.7;
 }
 
-// ======================================================
-// MAP LIMIT
-// ======================================================
+// =====================================================
+// ENEMIES
+// =====================================================
 
-function limitPlayer() {
+const enemies=[];
 
-  const limit =
-    45;
+function createEnemy(
+  x,
+  z
+){
 
-  player.position.x =
+  const enemy=
+    new THREE.Group();
+
+  const body=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .9,1.6,.55
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0xd93636
+      })
+    );
+
+  body.position.y=
+    1.8;
+
+  enemy.add(body);
+
+  const head=
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .4,16,16
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0xe0a078
+      })
+    );
+
+  head.position.y=
+    3;
+
+  enemy.add(head);
+
+  enemy.position.set(
+    x,0,z
+  );
+
+  enemy.userData.hp=
+    100;
+
+  enemy.userData.alive=
+    true;
+
+  scene.add(enemy);
+
+  enemies.push(enemy);
+}
+
+createEnemy(
+  8,-10
+);
+
+createEnemy(
+  -12,-12
+);
+
+createEnemy(
+  15,15
+);
+
+// =====================================================
+// DAMAGE ENEMY
+// =====================================================
+
+function damageEnemy(){
+
+  let closest=null;
+
+  let nearest=
+    Infinity;
+
+  for(
+    const enemy of enemies
+  ){
+
+    if(
+      !enemy.userData.alive
+    )
+      continue;
+
+    const d=
+      player.position.distanceTo(
+        enemy.position
+      );
+
+    if(
+      d<nearest
+    ){
+
+      nearest=d;
+
+      closest=enemy;
+    }
+  }
+
+  if(
+    !closest ||
+    nearest>30
+  )
+    return;
+
+  closest.userData.hp -=
+    state.weapons[
+      state.weaponIndex
+    ].damage;
+
+  if(
+    closest.userData.hp<=0
+  ){
+
+    closest.userData.alive=
+      false;
+
+    closest.visible=
+      false;
+
+    state.score+=100;
+
+    updateHUD();
+  }
+}
+
+// =====================================================
+// LIMIT MAP
+// =====================================================
+
+function limitPlayer(){
+
+  const limit=48;
+
+  player.position.x=
     Math.max(
       -limit,
       Math.min(
@@ -1226,7 +980,7 @@ function limitPlayer() {
       )
     );
 
-  player.position.z =
+  player.position.z=
     Math.max(
       -limit,
       Math.min(
@@ -1236,125 +990,67 @@ function limitPlayer() {
     );
 }
 
-// ======================================================
-// ENEMY SIMPLE MOVEMENT
-// ======================================================
+// =====================================================
+// MAIN LOOP
+// =====================================================
 
-function updateEnemies() {
-
-  for (
-    const enemy of enemies
-  ) {
-
-    if (
-      !enemy.userData.alive
-    )
-      continue;
-
-    const distance =
-      enemy.position.distanceTo(
-        player.position
-      );
-
-    if (
-      distance < 18 &&
-      distance > 2
-    ) {
-
-      const direction =
-        new THREE.Vector3()
-          .subVectors(
-            player.position,
-            enemy.position
-          )
-          .normalize();
-
-      enemy.position.x +=
-        direction.x * 0.01;
-
-      enemy.position.z +=
-        direction.z * 0.01;
-
-      enemy.lookAt(
-        player.position.x,
-        enemy.position.y,
-        player.position.z
-      );
-    }
-  }
-}
-
-// ======================================================
-// GAME UPDATE
-// ======================================================
-
-function updateGame() {
+function update(){
 
   updatePlayer();
 
-  updateAnimation();
+  animation();
 
   updateJump();
 
-  updateEnemies();
+  updateCamera();
 
   limitPlayer();
 
-  updateCamera();
-
   updateHUD();
 
-  if (status) {
+  if(
+    state.running &&
+    state.moving
+  ){
 
-    if (
-      state.reloading
-    ) {
+    status.textContent=
+      "RUNNING";
 
-      status.textContent =
-        "RELOADING...";
+  }else if(
+    state.moving
+  ){
 
-    } else if (
-      state.running &&
-      state.moving
-    ) {
+    status.textContent=
+      "WALKING";
 
-      status.textContent =
-        "RUNNING";
+  }else if(
+    state.jumping
+  ){
 
-    } else if (
-      state.moving
-    ) {
+    status.textContent=
+      "JUMP";
 
-      status.textContent =
-        "WALKING";
+  }else if(
+    !state.reloading
+  ){
 
-    } else if (
-      state.jumping
-    ) {
-
-      status.textContent =
-        "JUMP";
-
-    } else {
-
-      status.textContent =
-        "READY";
-    }
+    status.textContent=
+      "READY";
   }
 
   requestAnimationFrame(
-    updateGame
+    update
   );
 }
 
-// ======================================================
+// =====================================================
 // START
-// ======================================================
+// =====================================================
 
 updateHUD();
 
-updateGame();
+update();
 
 console.log(
-  "LAWANG MOBILE 3D CONTROLLER READY"
+  "LAWANG MOBILE 3D READY"
 );
