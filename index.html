@@ -49,16 +49,30 @@ body {
   left: 15px;
   z-index: 100;
   color: white;
-  background: rgba(0,0,0,0.5);
+  background:
+    rgba(0,0,0,0.5);
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 14px;
   line-height: 1.6;
   pointer-events: none;
 }
-/* =========================
+/* =================================
+   CAMERA AREA
+================================= */
+#cameraArea {
+  position: fixed;
+  left: 35%;
+  top: 0;
+  width: 65%;
+  height: 70%;
+  z-index: 50;
+  pointer-events: auto;
+  touch-action: none;
+}
+/* =================================
    JOYSTICK
-========================= */
+================================= */
 #joystick {
   position: fixed;
   left: 25px;
@@ -66,10 +80,13 @@ body {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.10);
-  border: 2px solid
+  background:
+    rgba(255,255,255,0.10);
+  border:
+    2px solid
     rgba(255,255,255,0.35);
   z-index: 200;
+  touch-action: none;
 }
 #joystickKnob {
   position: absolute;
@@ -80,54 +97,112 @@ body {
   margin-left: -31px;
   margin-top: -31px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.30);
-  border: 2px solid
+  background:
+    rgba(255,255,255,0.30);
+  border:
+    2px solid
     rgba(255,255,255,0.65);
   pointer-events: none;
 }
-/* =========================
-   RUN
-========================= */
-#runButton {
+/* =================================
+   COMMON BUTTON
+================================= */
+.gameButton {
   position: fixed;
-  left: 175px;
-  bottom: 45px;
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  border: 2px solid
-    rgba(255,255,255,0.5);
+  border:
+    2px solid
+    rgba(255,255,255,0.45);
   background:
-    rgba(35,136,255,0.35);
+    rgba(255,255,255,0.15);
   color: white;
-  font-size: 13px;
-  font-weight: bold;
-  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
   user-select: none;
+  -webkit-user-select: none;
+  z-index: 200;
+  touch-action: none;
 }
-/* =========================
-   CAMERA AREA
-========================= */
-#cameraArea {
-  position: fixed;
-  left: 35%;
-  top: 0;
-  width: 65%;
-  height: 70%;
-  z-index: 50;
-  pointer-events: auto;
+/* =================================
+   RUN
+================================= */
+#runButton {
+  left: 175px;
+  bottom: 45px;
+  background:
+    rgba(35,136,255,0.35);
 }
-/* =========================
-   DEBUG
-========================= */
+/* =================================
+   JUMP
+================================= */
+#jumpButton {
+  right: 125px;
+  bottom: 45px;
+  background:
+    rgba(255,255,255,0.18);
+}
+/* =================================
+   FIRE
+================================= */
+#fireButton {
+  right: 25px;
+  bottom: 40px;
+  width: 95px;
+  height: 95px;
+  background:
+    rgba(220,50,50,0.42);
+  border:
+    2px solid
+    rgba(255,100,100,0.8);
+  font-size: 16px;
+}
+/* =================================
+   GUN
+================================= */
+#gunButton {
+  right: 35px;
+  bottom: 150px;
+  background:
+    rgba(35,136,255,0.35);
+}
+/* =================================
+   RELOAD
+================================= */
+#reloadButton {
+  right: 135px;
+  bottom: 135px;
+  width: 58px;
+  height: 58px;
+  font-size: 10px;
+  background:
+    rgba(255,180,50,0.25);
+}
+/* =================================
+   CROUCH
+================================= */
+#crouchButton {
+  right: 210px;
+  bottom: 45px;
+  width: 58px;
+  height: 58px;
+  font-size: 10px;
+  background:
+    rgba(150,150,255,0.25);
+}
+/* =================================
+   STATUS
+================================= */
 #status {
   position: fixed;
   bottom: 10px;
   left: 50%;
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%);
   z-index: 300;
   color: white;
   background:
@@ -137,44 +212,167 @@ body {
   font-size: 12px;
   pointer-events: none;
 }
+/* =================================
+   SMALL SCREEN
+================================= */
+@media (max-width: 600px) {
+  #joystick {
+    left: 18px;
+    bottom: 22px;
+    width: 125px;
+    height: 125px;
+  }
+  #runButton {
+    left: 150px;
+    bottom: 35px;
+  }
+  #jumpButton {
+    right: 120px;
+    bottom: 35px;
+  }
+  #fireButton {
+    right: 18px;
+    bottom: 30px;
+    width: 88px;
+    height: 88px;
+  }
+  #gunButton {
+    right: 25px;
+    bottom: 130px;
+  }
+  #reloadButton {
+    right: 120px;
+    bottom: 120px;
+  }
+  #crouchButton {
+    right: 185px;
+    bottom: 35px;
+  }
+}
 </style>
 </head>
 <body>
+<!-- =================================
+     LOADING
+================================= -->
 <div id="loading">
   Loading LAWANG MOBILE 3D...
 </div>
+<!-- =================================
+     GAME CANVAS
+================================= -->
 <canvas id="game"></canvas>
+<!-- =================================
+     HUD
+================================= -->
 <div id="hud">
-  <strong>LAWANG MOBILE 3D</strong><br>
-  HP: <span id="hp">100</span><br>
-  Weapon: <span id="weapon">PISTOL</span><br>
-  Score: <span id="score">0</span>
+  <strong>
+    LAWANG MOBILE 3D
+  </strong>
+  <br>
+  HP:
+  <span id="hp">
+    100
+  </span>
+  <br>
+  Weapon:
+  <span id="weapon">
+    PISTOL
+  </span>
+  <br>
+  Score:
+  <span id="score">
+    0
+  </span>
 </div>
-<!-- CAMERA TOUCH AREA -->
+<!-- =================================
+     CAMERA
+================================= -->
 <div id="cameraArea"></div>
-<!-- JOYSTICK -->
+<!-- =================================
+     JOYSTICK
+================================= -->
 <div id="joystick">
   <div id="joystickKnob"></div>
 </div>
-<!-- RUN -->
-<div id="runButton">
+<!-- =================================
+     RUN
+================================= -->
+<div
+  id="runButton"
+  class="gameButton">
   RUN
 </div>
+<!-- =================================
+     JUMP
+================================= -->
+<div
+  id="jumpButton"
+  class="gameButton">
+  JUMP
+</div>
+<!-- =================================
+     CROUCH
+================================= -->
+<div
+  id="crouchButton"
+  class="gameButton">
+  CROUCH
+</div>
+<!-- =================================
+     RELOAD
+================================= -->
+<div
+  id="reloadButton"
+  class="gameButton">
+  RELOAD
+</div>
+<!-- =================================
+     GUN
+================================= -->
+<div
+  id="gunButton"
+  class="gameButton">
+  GUN
+</div>
+<!-- =================================
+     FIRE
+================================= -->
+<div
+  id="fireButton"
+  class="gameButton">
+  FIRE
+</div>
+<!-- =================================
+     STATUS
+================================= -->
 <div id="status">
   3D TEST
 </div>
-<!-- GAME ENGINE -->
+<!-- =================================
+     THREE.JS
+================================= -->
 <script type="module">
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-window.THREE = THREE;
+window.THREE =
+  THREE;
 const canvas =
-  document.getElementById("game");
+  document.getElementById(
+    "game"
+  );
+/* =================================
+   SCENE
+================================= */
 const scene =
   new THREE.Scene();
 scene.background =
-  new THREE.Color(0x87ceeb);
-// CAMERA
+  new THREE.Color(
+    0x87ceeb
+  );
+/* =================================
+   CAMERA
+================================= */
 const camera =
   new THREE.PerspectiveCamera(
     70,
@@ -188,7 +386,9 @@ camera.position.set(
   4,
   8
 );
-// RENDERER
+/* =================================
+   RENDERER
+================================= */
 const renderer =
   new THREE.WebGLRenderer({
     canvas,
@@ -204,7 +404,9 @@ renderer.setSize(
   window.innerWidth,
   window.innerHeight
 );
-// LIGHT
+/* =================================
+   LIGHT
+================================= */
 const sun =
   new THREE.DirectionalLight(
     0xffffff,
@@ -215,14 +417,18 @@ sun.position.set(
   20,
   10
 );
-scene.add(sun);
+scene.add(
+  sun
+);
 scene.add(
   new THREE.AmbientLight(
     0xffffff,
     0.7
   )
 );
-// GROUND
+/* =================================
+   GROUND
+================================= */
 const ground =
   new THREE.Mesh(
     new THREE.PlaneGeometry(
@@ -230,13 +436,18 @@ const ground =
       100
     ),
     new THREE.MeshStandardMaterial({
-      color: 0x3b7d3b
+      color:
+        0x3b7d3b
     })
   );
 ground.rotation.x =
   -Math.PI / 2;
-scene.add(ground);
-// ROAD
+scene.add(
+  ground
+);
+/* =================================
+   ROAD
+================================= */
 const road =
   new THREE.Mesh(
     new THREE.BoxGeometry(
@@ -245,12 +456,18 @@ const road =
       8
     ),
     new THREE.MeshStandardMaterial({
-      color: 0x333333
+      color:
+        0x333333
     })
   );
-road.position.y = 0.03;
-scene.add(road);
-// BUILDINGS
+road.position.y =
+  0.03;
+scene.add(
+  road
+);
+/* =================================
+   BUILDINGS
+================================= */
 function building(
   x,
   z,
@@ -266,7 +483,8 @@ function building(
         d
       ),
       new THREE.MeshStandardMaterial({
-        color: 0xb8b8b8
+        color:
+          0xb8b8b8
       })
     );
   mesh.position.set(
@@ -274,14 +492,45 @@ function building(
     h / 2,
     z
   );
-  scene.add(mesh);
+  scene.add(
+    mesh
+  );
 }
-building(-15,-12,10,7,8);
-building(15,-12,12,9,9);
-building(-18,15,8,6,10);
-building(18,15,10,8,8);
-// TREES
-function tree(x,z) {
+building(
+  -15,
+  -12,
+  10,
+  7,
+  8
+);
+building(
+  15,
+  -12,
+  12,
+  9,
+  9
+);
+building(
+  -18,
+  15,
+  8,
+  6,
+  10
+);
+building(
+  18,
+  15,
+  10,
+  8,
+  8
+);
+/* =================================
+   TREES
+================================= */
+function tree(
+  x,
+  z
+) {
   const trunk =
     new THREE.Mesh(
       new THREE.CylinderGeometry(
@@ -291,7 +540,8 @@ function tree(x,z) {
         8
       ),
       new THREE.MeshStandardMaterial({
-        color: 0x6b3f20
+        color:
+          0x6b3f20
       })
     );
   trunk.position.set(
@@ -299,7 +549,9 @@ function tree(x,z) {
     1.5,
     z
   );
-  scene.add(trunk);
+  scene.add(
+    trunk
+  );
   const leaves =
     new THREE.Mesh(
       new THREE.SphereGeometry(
@@ -308,7 +560,8 @@ function tree(x,z) {
         12
       ),
       new THREE.MeshStandardMaterial({
-        color: 0x218c35
+        color:
+          0x218c35
       })
     );
   leaves.position.set(
@@ -316,18 +569,40 @@ function tree(x,z) {
     4,
     z
   );
-  scene.add(leaves);
+  scene.add(
+    leaves
+  );
 }
-tree(-8,-8);
-tree(8,-8);
-tree(-8,8);
-tree(8,8);
-tree(-25,0);
-tree(25,0);
-// PLAYER
+tree(
+  -8,
+  -8
+);
+tree(
+  8,
+  -8
+);
+tree(
+  -8,
+  8
+);
+tree(
+  8,
+  8
+);
+tree(
+  -25,
+  0
+);
+tree(
+  25,
+  0
+);
+/* =================================
+   PLAYER
+================================= */
 const player =
   new THREE.Group();
-// BODY
+/* BODY */
 const body =
   new THREE.Mesh(
     new THREE.BoxGeometry(
@@ -336,12 +611,16 @@ const body =
       0.6
     ),
     new THREE.MeshStandardMaterial({
-      color: 0x2388ff
+      color:
+        0x2388ff
     })
   );
-body.position.y = 2;
-player.add(body);
-// HEAD
+body.position.y =
+  2;
+player.add(
+  body
+);
+/* HEAD */
 const head =
   new THREE.Mesh(
     new THREE.SphereGeometry(
@@ -350,15 +629,20 @@ const head =
       20
     ),
     new THREE.MeshStandardMaterial({
-      color: 0xf0b48a
+      color:
+        0xf0b48a
     })
   );
-head.position.y = 3.15;
-player.add(head);
-// LEGS
+head.position.y =
+  3.15;
+player.add(
+  head
+);
+/* LEGS */
 const legMaterial =
   new THREE.MeshStandardMaterial({
-    color: 0x202020
+    color:
+      0x202020
   });
 const leftLeg =
   new THREE.Mesh(
@@ -374,7 +658,9 @@ leftLeg.position.set(
   0.6,
   0
 );
-player.add(leftLeg);
+player.add(
+  leftLeg
+);
 const rightLeg =
   new THREE.Mesh(
     new THREE.BoxGeometry(
@@ -389,11 +675,14 @@ rightLeg.position.set(
   0.6,
   0
 );
-player.add(rightLeg);
-// ARMS
+player.add(
+  rightLeg
+);
+/* ARMS */
 const armMaterial =
   new THREE.MeshStandardMaterial({
-    color: 0x2388ff
+    color:
+      0x2388ff
   });
 const leftArm =
   new THREE.Mesh(
@@ -409,7 +698,9 @@ leftArm.position.set(
   2,
   0
 );
-player.add(leftArm);
+player.add(
+  leftArm
+);
 const rightArm =
   new THREE.Mesh(
     new THREE.BoxGeometry(
@@ -424,18 +715,29 @@ rightArm.position.set(
   2,
   0
 );
-player.add(rightArm);
+player.add(
+  rightArm
+);
+/* PLAYER START */
 player.position.set(
   0,
   0,
   5
 );
-scene.add(player);
-// EXPOSE GAME OBJECTS
-window.gameScene = scene;
-window.gameCamera = camera;
-window.gameRenderer = renderer;
-window.gamePlayer = player;
+scene.add(
+  player
+);
+/* =================================
+   SHARE OBJECTS WITH GAME.JS
+================================= */
+window.gameScene =
+  scene;
+window.gameCamera =
+  camera;
+window.gameRenderer =
+  renderer;
+window.gamePlayer =
+  player;
 window.gameParts = {
   leftLeg,
   rightLeg,
@@ -444,7 +746,9 @@ window.gameParts = {
   body,
   head
 };
-// RESIZE
+/* =================================
+   RESIZE
+================================= */
 window.addEventListener(
   "resize",
   () => {
@@ -458,14 +762,20 @@ window.addEventListener(
     );
   }
 );
-// START GAME.JS
+/* =================================
+   LOAD GAME.JS
+================================= */
 const script =
-  document.createElement("script");
-script.src = "game.js";
+  document.createElement(
+    "script"
+  );
+script.src =
+  "game.js";
 script.onload = () => {
   document.getElementById(
     "loading"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 };
 script.onerror = () => {
   document.getElementById(
@@ -473,8 +783,12 @@ script.onerror = () => {
   ).textContent =
     "game.js not found";
 };
-document.body.appendChild(script);
-// RENDER LOOP
+document.body.appendChild(
+  script
+);
+/* =================================
+   RENDER
+================================= */
 function render() {
   requestAnimationFrame(
     render
