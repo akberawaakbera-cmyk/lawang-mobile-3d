@@ -3,254 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+content="width=device-width,initial-scale=1.0,
+maximum-scale=1.0,user-scalable=no,
+viewport-fit=cover">
 
-<title>LAWANG MOBILE 3D - COMBAT</title>
+<title>LAWANG MOBILE 3D</title>
 
 <style>
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
-  touch-action:none;
-  font-family:Arial,sans-serif;
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#000;
+ touch-action:none;
+ font-family:Arial,sans-serif;
 }
 
 #game{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-}
-
-#loading{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#101820;
-  color:white;
-  font-size:20px;
+ position:fixed;
+ inset:0;
+ width:100%;
+ height:100%;
 }
 
 #hud{
-  position:fixed;
-  top:12px;
-  left:12px;
-  z-index:100;
-  color:white;
-  background:rgba(0,0,0,.55);
-  padding:9px 12px;
-  border-radius:10px;
-  font-size:13px;
-  line-height:1.7;
-  pointer-events:none;
+ position:fixed;
+ top:12px;
+ left:12px;
+ z-index:100;
+ color:#fff;
+ background:rgba(0,0,0,.55);
+ padding:10px 14px;
+ border-radius:12px;
+ line-height:1.7;
+ font-size:14px;
+ pointer-events:none;
 }
 
 #crosshair{
-  position:fixed;
-  left:50%;
-  top:50%;
-  width:24px;
-  height:24px;
-  transform:translate(-50%,-50%);
-  z-index:80;
-  pointer-events:none;
+ position:fixed;
+ left:50%;
+ top:50%;
+ transform:translate(-50%,-50%);
+ width:24px;
+ height:24px;
+ z-index:150;
+ pointer-events:none;
 }
 
 #crosshair:before,
 #crosshair:after{
-  content:"";
-  position:absolute;
-  background:white;
+ content:"";
+ position:absolute;
+ background:white;
+ box-shadow:0 0 4px #000;
 }
 
 #crosshair:before{
-  width:24px;
-  height:2px;
-  left:0;
-  top:11px;
+ width:24px;
+ height:2px;
+ left:0;
+ top:11px;
 }
 
 #crosshair:after{
-  width:2px;
-  height:24px;
-  left:11px;
-  top:0;
-}
-
-#cameraArea{
-  position:fixed;
-  right:0;
-  top:0;
-  width:65%;
-  height:70%;
-  z-index:50;
-  touch-action:none;
+ width:2px;
+ height:24px;
+ left:11px;
+ top:0;
 }
 
 #joystick{
-  position:fixed;
-  left:22px;
-  bottom:25px;
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  background:rgba(255,255,255,.10);
-  border:2px solid rgba(255,255,255,.35);
-  z-index:200;
-  touch-action:none;
+ position:fixed;
+ left:25px;
+ bottom:25px;
+ width:140px;
+ height:140px;
+ border-radius:50%;
+ background:rgba(255,255,255,.12);
+ border:2px solid rgba(255,255,255,.4);
+ z-index:300;
+ touch-action:none;
 }
 
 #joystickKnob{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:62px;
-  height:62px;
-  margin-left:-31px;
-  margin-top:-31px;
-  border-radius:50%;
-  background:rgba(255,255,255,.30);
-  border:2px solid rgba(255,255,255,.65);
-  pointer-events:none;
+ position:absolute;
+ width:62px;
+ height:62px;
+ left:50%;
+ top:50%;
+ margin:-31px;
+ border-radius:50%;
+ background:rgba(255,255,255,.3);
+ border:2px solid rgba(255,255,255,.7);
+ pointer-events:none;
 }
 
-.button{
-  position:fixed;
-  z-index:200;
-  width:68px;
-  height:68px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.5);
-  color:white;
-  font-weight:bold;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  user-select:none;
-  touch-action:none;
+.control{
+ position:fixed;
+ z-index:300;
+ border:2px solid rgba(255,255,255,.45);
+ border-radius:50%;
+ color:#fff;
+ font-weight:bold;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ user-select:none;
+ touch-action:none;
 }
 
 #fireButton{
-  right:24px;
-  bottom:35px;
-  width:88px;
-  height:88px;
-  background:rgba(220,45,45,.55);
-}
-
-#fireButton.active{
-  background:rgba(255,40,40,.9);
-}
-
-#runButton{
-  left:175px;
-  bottom:38px;
-  background:rgba(35,136,255,.35);
+ right:25px;
+ bottom:35px;
+ width:92px;
+ height:92px;
+ background:rgba(210,30,30,.55);
 }
 
 #jumpButton{
-  right:125px;
-  bottom:38px;
-  background:rgba(50,180,80,.35);
+ right:135px;
+ bottom:45px;
+ width:65px;
+ height:65px;
+ background:rgba(255,255,255,.15);
 }
 
 #reloadButton{
-  right:135px;
-  bottom:120px;
-  width:58px;
-  height:58px;
-  font-size:11px;
-  background:rgba(255,170,40,.35);
+ right:145px;
+ bottom:125px;
+ width:62px;
+ height:62px;
+ font-size:11px;
+ background:rgba(255,180,0,.25);
 }
 
 #gunButton{
-  right:32px;
-  bottom:145px;
-  background:rgba(130,80,220,.4);
+ right:35px;
+ bottom:145px;
+ width:65px;
+ height:65px;
+ font-size:11px;
+ background:rgba(35,136,255,.35);
 }
 
-#crouchButton{
-  right:215px;
-  bottom:38px;
-  width:58px;
-  height:58px;
-  font-size:10px;
-  background:rgba(80,80,80,.5);
-}
-
-#message{
-  position:fixed;
-  left:50%;
-  top:70%;
-  transform:translate(-50%,-50%);
-  z-index:150;
-  color:#fff;
-  font-size:20px;
-  font-weight:bold;
-  text-shadow:0 2px 4px #000;
-  pointer-events:none;
+#runButton{
+ left:180px;
+ bottom:40px;
+ width:70px;
+ height:70px;
+ font-size:12px;
+ background:rgba(35,136,255,.35);
 }
 
 #status{
-  position:fixed;
-  bottom:8px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:300;
-  color:white;
-  background:rgba(0,0,0,.45);
-  padding:4px 9px;
-  border-radius:8px;
-  font-size:11px;
-  pointer-events:none;
+ position:fixed;
+ bottom:8px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:400;
+ color:white;
+ background:rgba(0,0,0,.45);
+ padding:5px 10px;
+ border-radius:8px;
+ font-size:11px;
+ pointer-events:none;
+}
+
+#loading{
+ position:fixed;
+ inset:0;
+ z-index:9999;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#101820;
+ color:#fff;
+ font-size:20px;
+}
+
+#damageFlash{
+ position:fixed;
+ inset:0;
+ z-index:500;
+ background:rgba(255,0,0,.22);
+ opacity:0;
+ pointer-events:none;
+}
+
+#weaponName{
+ position:fixed;
+ right:20px;
+ top:20px;
+ z-index:100;
+ color:white;
+ background:rgba(0,0,0,.5);
+ padding:8px 12px;
+ border-radius:10px;
+ font-weight:bold;
+}
+
+#enemyInfo{
+ position:fixed;
+ top:95px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:120;
+ color:white;
+ background:rgba(0,0,0,.55);
+ padding:5px 12px;
+ border-radius:8px;
+ display:none;
 }
 </style>
 </head>
 
 <body>
 
-<div id="loading">
-  Loading LAWANG MOBILE 3D...
-</div>
+<div id="loading">Loading LAWANG MOBILE 3D...</div>
 
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <strong>LAWANG MOBILE 3D</strong><br>
-  HP: <span id="hp">100</span><br>
-  Weapon: <span id="weapon">PISTOL</span><br>
-  Ammo: <span id="ammo">12 / 60</span><br>
-  Score: <span id="score">0</span>
+ <b>LAWANG MOBILE 3D</b><br>
+ HP: <span id="hp">100</span><br>
+ Ammo: <span id="ammo">12/12</span><br>
+ Kills: <span id="kills">0</span>
 </div>
 
+<div id="weaponName">PISTOL</div>
+<div id="enemyInfo"></div>
 <div id="crosshair"></div>
-
-<div id="message"></div>
-
-<div id="cameraArea"></div>
+<div id="damageFlash"></div>
 
 <div id="joystick">
-  <div id="joystickKnob"></div>
+ <div id="joystickKnob"></div>
 </div>
 
-<div id="runButton" class="button">RUN</div>
-<div id="jumpButton" class="button">JUMP</div>
-<div id="reloadButton" class="button">RELOAD</div>
-<div id="gunButton" class="button">GUN</div>
-<div id="crouchButton" class="button">CROUCH</div>
-<div id="fireButton" class="button">FIRE</div>
+<div id="runButton" class="control">RUN</div>
+<div id="fireButton" class="control">FIRE</div>
+<div id="jumpButton" class="control">JUMP</div>
+<div id="reloadButton" class="control">RELOAD</div>
+<div id="gunButton" class="control">GUN</div>
 
 <div id="status">READY</div>
 
@@ -259,341 +259,442 @@ html,body{
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-window.THREE = THREE;
+window.THREE=THREE;
 
-const canvas =
-document.getElementById("game");
+const canvas=document.getElementById("game");
 
-const scene =
-new THREE.Scene();
+const scene=new THREE.Scene();
 
-scene.background =
-new THREE.Color(0x87ceeb);
+scene.background=new THREE.Color(0x86c9ee);
 
-/* CAMERA */
-
-const camera =
-new THREE.PerspectiveCamera(
-  70,
-  innerWidth / innerHeight,
-  0.1,
-  1000
+scene.fog=new THREE.Fog(
+ 0x86c9ee,
+ 40,
+ 150
 );
 
-/* RENDERER */
+const camera=new THREE.PerspectiveCamera(
+ 68,
+ innerWidth/innerHeight,
+ .1,
+ 500
+);
 
-const renderer =
-new THREE.WebGLRenderer({
-  canvas:canvas,
-  antialias:true
+const renderer=new THREE.WebGLRenderer({
+ canvas,
+ antialias:true,
+ powerPreference:"high-performance"
 });
 
 renderer.setPixelRatio(
-  Math.min(devicePixelRatio,2)
+ Math.min(devicePixelRatio,1.6)
 );
 
-renderer.setSize(
-  innerWidth,
-  innerHeight
-);
+renderer.setSize(innerWidth,innerHeight);
 
-/* LIGHT */
+renderer.shadowMap.enabled=false;
 
-const sun =
-new THREE.DirectionalLight(
+
+// LIGHT
+scene.add(
+ new THREE.HemisphereLight(
   0xffffff,
+  0x667766,
   2
+ )
 );
 
-sun.position.set(
-  10,20,10
+const sun=new THREE.DirectionalLight(
+  0xffffff,
+  1.7
 );
+
+sun.position.set(40,60,20);
 
 scene.add(sun);
 
-scene.add(
-  new THREE.AmbientLight(
-    0xffffff,
-    0.7
-  )
+
+// GROUND
+const ground=new THREE.Mesh(
+ new THREE.PlaneGeometry(180,180),
+ new THREE.MeshStandardMaterial({
+  color:0x3f873d
+ })
 );
 
-/* GROUND */
-
-const ground =
-new THREE.Mesh(
-  new THREE.PlaneGeometry(100,100),
-  new THREE.MeshStandardMaterial({
-    color:0x397a39
-  })
-);
-
-ground.rotation.x =
--Math.PI/2;
+ground.rotation.x=-Math.PI/2;
 
 scene.add(ground);
 
-/* ROAD */
 
-const road =
-new THREE.Mesh(
-  new THREE.BoxGeometry(100,.05,8),
+// ROAD
+function makeRoad(x,z,w,d){
+ const r=new THREE.Mesh(
+  new THREE.BoxGeometry(w,.08,d),
   new THREE.MeshStandardMaterial({
-    color:0x303030
+   color:0x303238
   })
-);
+ );
 
-road.position.y=.03;
-
-scene.add(road);
-
-/* BUILDINGS */
-
-function createBuilding(x,z,w,h,d){
-
-  const building =
-  new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    new THREE.MeshStandardMaterial({
-      color:0xb7b7b7
-    })
-  );
-
-  building.position.set(
-    x,
-    h/2,
-    z
-  );
-
-  scene.add(building);
+ r.position.set(x,.04,z);
+ scene.add(r);
 }
 
-createBuilding(-15,-13,10,7,8);
-createBuilding(15,-13,12,9,9);
-createBuilding(-18,15,8,6,10);
-createBuilding(18,15,10,8,8);
+makeRoad(0,0,180,10);
+makeRoad(0,0,10,180);
+makeRoad(0,-35,180,7);
+makeRoad(35,0,7,180);
+makeRoad(-35,0,7,180);
 
-/* TREES */
 
-function createTree(x,z){
+// ROAD LINES
+function roadLine(x,z,w,d){
+ const m=new THREE.Mesh(
+  new THREE.BoxGeometry(w,.1,d),
+  new THREE.MeshStandardMaterial({
+   color:0xe5d66b
+  })
+ );
 
-  const trunk =
-  new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .35,.45,3,8
-    ),
-    new THREE.MeshStandardMaterial({
-      color:0x68401f
-    })
-  );
+ m.position.set(x,.1,z);
+ scene.add(m);
+}
 
-  trunk.position.set(x,1.5,z);
+for(let x=-80;x<80;x+=8)
+ roadLine(x,0,4,.18);
 
-  scene.add(trunk);
+for(let z=-80;z<80;z+=8)
+ roadLine(0,z,.18,4);
 
-  const leaves =
-  new THREE.Mesh(
-    new THREE.SphereGeometry(
-      1.8,12,12
-    ),
-    new THREE.MeshStandardMaterial({
-      color:0x218c35
-    })
-  );
 
-  leaves.position.set(
-    x,4,z
-  );
+// BUILDING COLLIDERS
+window.worldColliders=[];
 
-  scene.add(leaves);
+function wall(x,y,z,w,h,d){
+ const mesh=new THREE.Mesh(
+  new THREE.BoxGeometry(w,h,d),
+  new THREE.MeshStandardMaterial({
+   color:0xb8b2a7
+  })
+ );
+
+ mesh.position.set(x,y+h/2,z);
+
+ scene.add(mesh);
+
+ worldColliders.push({
+  x,z,w,d,h
+ });
+
+ return mesh;
+}
+
+
+// HOUSE WITH DOOR
+function house(x,z){
+
+ const floor=new THREE.Mesh(
+  new THREE.BoxGeometry(16,.3,12),
+  new THREE.MeshStandardMaterial({
+   color:0x8f8b82
+  })
+ );
+
+ floor.position.set(x,.15,z);
+ scene.add(floor);
+
+ // back
+ wall(x,0,z-6,16,6,.4);
+
+ // left
+ wall(x-8,0,z, .4,6,12);
+
+ // right
+ wall(x+8,0,z,.4,6,12);
+
+ // front left
+ wall(x-5.8,0,z+6,4.4,6,.4);
+
+ // front right
+ wall(x+5.8,0,z+6,4.4,6,.4);
+
+ // roof
+ const roof=new THREE.Mesh(
+  new THREE.BoxGeometry(16,.5,12),
+  new THREE.MeshStandardMaterial({
+   color:0x6d3f32
+  })
+ );
+
+ roof.position.set(x,6.2,z);
+ scene.add(roof);
+
+ // door frame
+ const door=new THREE.Mesh(
+  new THREE.BoxGeometry(3.2,4,.35),
+  new THREE.MeshStandardMaterial({
+   color:0x573b27
+  })
+ );
+
+ door.position.set(x,2,z+6.05);
+
+ scene.add(door);
+
+}
+
+
+// HOUSES
+house(-22,-22);
+house(22,-22);
+house(-22,22);
+house(22,22);
+house(-55,-20);
+house(55,-20);
+house(-55,25);
+house(55,25);
+
+
+// TREES
+function tree(x,z){
+
+ const trunk=new THREE.Mesh(
+  new THREE.CylinderGeometry(
+   .35,.45,3,8
+  ),
+  new THREE.MeshStandardMaterial({
+   color:0x704522
+  })
+ );
+
+ trunk.position.set(x,1.5,z);
+
+ scene.add(trunk);
+
+ const leaves=new THREE.Mesh(
+  new THREE.SphereGeometry(
+   2.1,12,12
+  ),
+  new THREE.MeshStandardMaterial({
+   color:0x258a38
+  })
+ );
+
+ leaves.position.set(x,4,z);
+
+ scene.add(leaves);
 }
 
 [
- [-8,-8],
- [8,-8],
- [-8,8],
- [8,8],
- [-25,0],
- [25,0],
- [-30,-20],
- [30,20]
-].forEach(p =>
-  createTree(p[0],p[1])
-);
+ [-10,-15],
+ [10,-15],
+ [-10,15],
+ [10,15],
+ [-45,-5],
+ [45,5],
+ [-50,45],
+ [50,45],
+ [-65,-45],
+ [65,-45]
+].forEach(p=>tree(p[0],p[1]));
 
-/* PLAYER */
 
-const player =
-new THREE.Group();
+// PLAYER
+const player=new THREE.Group();
 
-const body =
-new THREE.Mesh(
-  new THREE.BoxGeometry(1,1.7,.6),
-  new THREE.MeshStandardMaterial({
-    color:0x2388ff
-  })
+const body=new THREE.Mesh(
+ new THREE.BoxGeometry(1,1.7,.6),
+ new THREE.MeshStandardMaterial({
+  color:0x2388ff
+ })
 );
 
 body.position.y=2;
-
 player.add(body);
 
-const head =
-new THREE.Mesh(
-  new THREE.SphereGeometry(
-    .45,20,20
-  ),
-  new THREE.MeshStandardMaterial({
-    color:0xf0b48a
-  })
+const head=new THREE.Mesh(
+ new THREE.SphereGeometry(.45,16,16),
+ new THREE.MeshStandardMaterial({
+  color:0xf0b48a
+ })
 );
 
 head.position.y=3.15;
-
 player.add(head);
 
-/* LEGS */
+const legMat=new THREE.MeshStandardMaterial({
+ color:0x202020
+});
 
-const legMaterial =
-new THREE.MeshStandardMaterial({
+const leftLeg=new THREE.Mesh(
+ new THREE.BoxGeometry(.28,1.2,.35),
+ legMat
+);
+
+leftLeg.position.set(-.22,.6,0);
+
+const rightLeg=new THREE.Mesh(
+ new THREE.BoxGeometry(.28,1.2,.35),
+ legMat
+);
+
+rightLeg.position.set(.22,.6,0);
+
+player.add(leftLeg,rightLeg);
+
+const armMat=new THREE.MeshStandardMaterial({
+ color:0x2388ff
+});
+
+const leftArm=new THREE.Mesh(
+ new THREE.BoxGeometry(.25,1.2,.25),
+ armMat
+);
+
+leftArm.position.set(-.7,2,0);
+
+const rightArm=new THREE.Mesh(
+ new THREE.BoxGeometry(.25,1.2,.25),
+ armMat
+);
+
+rightArm.position.set(.7,2,0);
+
+player.add(leftArm,rightArm);
+
+
+// GUN
+const gunGroup=new THREE.Group();
+
+const gunBody=new THREE.Mesh(
+ new THREE.BoxGeometry(.25,.22,.9),
+ new THREE.MeshStandardMaterial({
   color:0x202020
-});
-
-const leftLeg =
-new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .28,1.2,.35
-  ),
-  legMaterial
+ })
 );
 
-leftLeg.position.set(
-  -.22,.6,0
+gunBody.position.z=-.45;
+
+const barrel=new THREE.Mesh(
+ new THREE.CylinderGeometry(
+  .045,.045,.45,8
+ ),
+ new THREE.MeshStandardMaterial({
+  color:0x111111
+ })
 );
 
-player.add(leftLeg);
+barrel.rotation.x=Math.PI/2;
 
-const rightLeg =
-new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .28,1.2,.35
-  ),
-  legMaterial
-);
+barrel.position.z=-1;
 
-rightLeg.position.set(
-  .22,.6,0
-);
+gunGroup.add(gunBody,barrel);
 
-player.add(rightLeg);
+gunGroup.position.set(.45,2,-.45);
 
-/* ARMS */
+player.add(gunGroup);
 
-const armMaterial =
-new THREE.MeshStandardMaterial({
-  color:0x2388ff
-});
-
-const leftArm =
-new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .25,1.2,.25
-  ),
-  armMaterial
-);
-
-leftArm.position.set(
-  -.7,2,0
-);
-
-player.add(leftArm);
-
-const rightArm =
-new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .25,1.2,.25
-  ),
-  armMaterial
-);
-
-rightArm.position.set(
-  .7,2,0
-);
-
-player.add(rightArm);
-
-player.position.set(
-  0,0,5
-);
+player.position.set(0,0,20);
 
 scene.add(player);
 
-/* EXPOSE */
 
+// ENEMIES
+const enemies=[];
+
+function createEnemy(x,z){
+
+ const enemy=new THREE.Group();
+
+ const eBody=new THREE.Mesh(
+  new THREE.BoxGeometry(1,1.7,.6),
+  new THREE.MeshStandardMaterial({
+   color:0xb52b2b
+  })
+ );
+
+ eBody.position.y=2;
+
+ const eHead=new THREE.Mesh(
+  new THREE.SphereGeometry(.45,14,14),
+  new THREE.MeshStandardMaterial({
+   color:0xc88c68
+  })
+ );
+
+ eHead.position.y=3.15;
+
+ enemy.add(eBody,eHead);
+
+ enemy.position.set(x,0,z);
+
+ enemy.userData={
+  hp:100,
+  maxHp:100,
+  head:eHead,
+  body:eBody,
+  alive:true
+ };
+
+ scene.add(enemy);
+
+ enemies.push(enemy);
+}
+
+createEnemy(0,-25);
+createEnemy(-30,-5);
+createEnemy(30,5);
+createEnemy(-45,35);
+createEnemy(45,35);
+
+
+// EXPOSE
 window.gameScene=scene;
 window.gameCamera=camera;
 window.gameRenderer=renderer;
 window.gamePlayer=player;
-
 window.gameParts={
-  body,
-  head,
-  leftLeg,
-  rightLeg,
-  leftArm,
-  rightArm
+ leftLeg,
+ rightLeg,
+ leftArm,
+ rightArm,
+ body,
+ head,
+ gunGroup
 };
+window.gameEnemies=enemies;
+window.worldColliders=worldColliders;
 
-/* RESIZE */
 
-window.addEventListener(
-"resize",
-()=>{
-
-  camera.aspect =
-  innerWidth/innerHeight;
-
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(
-    innerWidth,
-    innerHeight
-  );
-
+// RESIZE
+addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
 });
 
-/* GAME JS */
 
-const script =
-document.createElement("script");
+// LOAD GAME.JS
+const script=document.createElement("script");
 
 script.src="game.js";
 
 script.onload=()=>{
-  document.getElementById(
-    "loading"
-  ).style.display="none";
+ document.getElementById("loading").style.display="none";
 };
 
 script.onerror=()=>{
-  document.getElementById(
-    "loading"
-  ).textContent=
-  "game.js not found";
+ document.getElementById("loading").textContent=
+ "game.js not found";
 };
 
 document.body.appendChild(script);
 
-/* RENDER */
 
+// RENDER
 function render(){
-
-  requestAnimationFrame(render);
-
-  renderer.render(
-    scene,
-    camera
-  );
+ requestAnimationFrame(render);
+ renderer.render(scene,camera);
 }
 
 render();
