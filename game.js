@@ -1,7 +1,8 @@
 /* =========================================================
-   LAWANG MOBILE 3D — PLAYABLE TEST BUILD
-   Lobby + Battle + Aircraft + Joystick + Camera
-   Weapons + Fire + Reload + Jump + Crouch + Enemies
+   LAWANG MOBILE 3D — REVISED GAME.JS
+   LAWANG CHARACTER + LOBBY + BATTLE + AIRCRAFT
+   WEAPONS + FIRE + RELOAD + JUMP + CROUCH
+   ENEMIES + PICKUPS + MOBILE CONTROLS
    ========================================================= */
 
 (() => {
@@ -12,7 +13,6 @@
   const camera = window.gameCamera;
   const renderer = window.gameRenderer;
   const player = window.gamePlayer;
-  const parts = window.gameParts || {};
 
   if (!THREE || !scene || !camera || !renderer || !player) {
     console.error("LAWANG: Game engine objects missing.");
@@ -21,7 +21,7 @@
 
   /* =======================================================
      GAME STATE
-  ======================================================= */
+     ======================================================= */
 
   const state = {
     phase: "LOBBY",
@@ -53,6 +53,9 @@
     fireTimer: 0,
     animationTime: 0,
 
+    aircraftTime: 0,
+    canJumpFromAircraft: false,
+
     enemies: [],
     pickups: [],
 
@@ -61,6 +64,323 @@
 
     lastTime: performance.now()
   };
+
+  /* =======================================================
+     LAWANG CHARACTER
+     ======================================================= */
+
+  let lawangParts = {};
+
+  function createLawangCharacter() {
+
+    /* Remove old character children */
+    while (player.children.length) {
+      player.remove(player.children[0]);
+    }
+
+    lawangParts = {};
+
+    const skinMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0xc88968,
+        roughness: 0.75
+      });
+
+    const jacketMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0x111318,
+        roughness: 0.55,
+        metalness: 0.05
+      });
+
+    const pantsMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0x090b0f,
+        roughness: 0.7
+      });
+
+    const shoeMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0x050505,
+        roughness: 0.5
+      });
+
+    const hairMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0x080808,
+        roughness: 0.9
+      });
+
+    const eyeMaterial =
+      new THREE.MeshStandardMaterial({
+        color: 0x4b2818,
+        roughness: 0.3
+      });
+
+    /* BODY / JACKET */
+
+    const body =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.92,
+          1.35,
+          0.52
+        ),
+        jacketMaterial
+      );
+
+    body.position.y = 1.65;
+    player.add(body);
+
+    lawangParts.body = body;
+
+    /* NECK */
+
+    const neck =
+      new THREE.Mesh(
+        new THREE.CylinderGeometry(
+          0.16,
+          0.16,
+          0.25,
+          12
+        ),
+        skinMaterial
+      );
+
+    neck.position.y = 2.42;
+    player.add(neck);
+
+    /* HEAD */
+
+    const head =
+      new THREE.Mesh(
+        new THREE.SphereGeometry(
+          0.42,
+          24,
+          24
+        ),
+        skinMaterial
+      );
+
+    head.scale.set(
+      0.95,
+      1.08,
+      0.95
+    );
+
+    head.position.y = 2.92;
+    player.add(head);
+
+    lawangParts.head = head;
+
+    /* HAIR */
+
+    const hair =
+      new THREE.Mesh(
+        new THREE.SphereGeometry(
+          0.435,
+          24,
+          16
+        ),
+        hairMaterial
+      );
+
+    hair.scale.set(
+      1.02,
+      0.58,
+      1.02
+    );
+
+    hair.position.y = 3.18;
+    player.add(hair);
+
+    lawangParts.hair = hair;
+
+    /* LEFT EYE */
+
+    const leftEye =
+      new THREE.Mesh(
+        new THREE.SphereGeometry(
+          0.055,
+          12,
+          12
+        ),
+        eyeMaterial
+      );
+
+    leftEye.position.set(
+      -0.16,
+      2.98,
+      -0.385
+    );
+
+    player.add(leftEye);
+
+    /* RIGHT EYE */
+
+    const rightEye =
+      new THREE.Mesh(
+        new THREE.SphereGeometry(
+          0.055,
+          12,
+          12
+        ),
+        eyeMaterial
+      );
+
+    rightEye.position.set(
+      0.16,
+      2.98,
+      -0.385
+    );
+
+    player.add(rightEye);
+
+    /* LEFT ARM */
+
+    const leftArm =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.25,
+          1.25,
+          0.28
+        ),
+        jacketMaterial
+      );
+
+    leftArm.position.set(
+      -0.65,
+      1.68,
+      0
+    );
+
+    player.add(leftArm);
+
+    lawangParts.leftArm = leftArm;
+
+    /* RIGHT ARM */
+
+    const rightArm =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.25,
+          1.25,
+          0.28
+        ),
+        jacketMaterial
+      );
+
+    rightArm.position.set(
+      0.65,
+      1.68,
+      0
+    );
+
+    player.add(rightArm);
+
+    lawangParts.rightArm = rightArm;
+
+    /* LEFT LEG */
+
+    const leftLeg =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.30,
+          1.25,
+          0.34
+        ),
+        pantsMaterial
+      );
+
+    leftLeg.position.set(
+      -0.23,
+      0.62,
+      0
+    );
+
+    player.add(leftLeg);
+
+    lawangParts.leftLeg = leftLeg;
+
+    /* RIGHT LEG */
+
+    const rightLeg =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.30,
+          1.25,
+          0.34
+        ),
+        pantsMaterial
+      );
+
+    rightLeg.position.set(
+      0.23,
+      0.62,
+      0
+    );
+
+    player.add(rightLeg);
+
+    lawangParts.rightLeg = rightLeg;
+
+    /* LEFT SHOE */
+
+    const leftShoe =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.38,
+          0.20,
+          0.62
+        ),
+        shoeMaterial
+      );
+
+    leftShoe.position.set(
+      -0.23,
+      0.08,
+      -0.08
+    );
+
+    player.add(leftShoe);
+
+    /* RIGHT SHOE */
+
+    const rightShoe =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.38,
+          0.20,
+          0.62
+        ),
+        shoeMaterial
+      );
+
+    rightShoe.position.set(
+      0.23,
+      0.08,
+      -0.08
+    );
+
+    player.add(rightShoe);
+
+    player.scale.set(
+      1,
+      1,
+      1
+    );
+
+    player.visible = true;
+
+    player.userData.character =
+      "LAWANG";
+
+    console.log(
+      "LAWANG 3D CHARACTER CREATED"
+    );
+  }
+
+  createLawangCharacter();
 
   /* =======================================================
      WEAPONS
@@ -104,129 +424,295 @@
      ======================================================= */
 
   function text(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
+
+    const el =
+      document.getElementById(id);
+
+    if (el) {
+      el.textContent = value;
+    }
   }
 
   function updateHUD() {
-    text("hp", Math.max(0, Math.round(state.hp)));
-    text("score", state.score);
-    text("kills", state.kills);
 
-    const weapon = weapons[state.weaponIndex];
+    text(
+      "hp",
+      Math.max(
+        0,
+        Math.round(state.hp)
+      )
+    );
 
-    text("weapon", weapon.name);
+    text(
+      "kills",
+      state.kills
+    );
 
-    const ammo = document.getElementById("ammo");
+    text(
+      "score",
+      state.score
+    );
+
+    text(
+      "weapon",
+      weapons[
+        state.weaponIndex
+      ].name
+    );
+
+    const ammo =
+      document.getElementById(
+        "ammo"
+      );
 
     if (ammo) {
+
       ammo.textContent =
         state.reloading
           ? "RELOADING"
-          : `${state.ammo}/${weapon.magazine}`;
+          : `${state.ammo}/${weapons[state.weaponIndex].magazine}`;
     }
 
-    const status = document.getElementById("status");
+    const status =
+      document.getElementById(
+        "status"
+      );
 
-    if (status) {
-      if (state.phase === "LOBBY") {
-        status.textContent = "LOBBY";
-      } else if (state.phase === "AIRCRAFT") {
-        status.textContent = "AIRCRAFT — JUMP";
-      } else if (state.reloading) {
-        status.textContent = "RELOADING";
-      } else if (state.running) {
-        status.textContent = "RUNNING";
-      } else {
-        status.textContent = "READY";
+    if (!status) {
+      return;
+    }
+
+    if (
+      state.phase === "LOBBY"
+    ) {
+      status.textContent =
+        "LOBBY READY";
+    }
+
+    else if (
+      state.phase === "AIRCRAFT"
+    ) {
+      status.textContent =
+        "✈️ INSIDE AIRCRAFT — JUMP";
+    }
+
+    else if (
+      state.phase === "BATTLE"
+    ) {
+
+      if (
+        player.position.y > 3
+      ) {
+        status.textContent =
+          "🪂 FALLING";
+      }
+
+      else if (
+        state.reloading
+      ) {
+        status.textContent =
+          "RELOADING";
+      }
+
+      else if (
+        state.running
+      ) {
+        status.textContent =
+          "RUNNING";
+      }
+
+      else {
+        status.textContent =
+          "BATTLE READY";
       }
     }
   }
 
   /* =======================================================
-     CREATE MOBILE BUTTON
+     MOBILE BUTTON
      ======================================================= */
 
-  function createButton(id, label, right, bottom) {
-    let button = document.getElementById(id);
+  function createButton(
+    id,
+    label,
+    right,
+    bottom
+  ) {
+
+    let button =
+      document.getElementById(id);
 
     if (!button) {
-      button = document.createElement("button");
-      button.id = id;
-      button.textContent = label;
 
-      button.style.position = "fixed";
-      button.style.right = right + "px";
-      button.style.bottom = bottom + "px";
-      button.style.width = "64px";
-      button.style.height = "64px";
-      button.style.borderRadius = "50%";
+      button =
+        document.createElement(
+          "button"
+        );
+
+      button.id = id;
+      button.textContent =
+        label;
+
+      button.style.position =
+        "fixed";
+
+      button.style.right =
+        right + "px";
+
+      button.style.bottom =
+        bottom + "px";
+
+      button.style.width =
+        "64px";
+
+      button.style.height =
+        "64px";
+
+      button.style.borderRadius =
+        "50%";
+
       button.style.border =
         "2px solid rgba(255,255,255,.55)";
+
       button.style.background =
         "rgba(0,0,0,.55)";
-      button.style.color = "white";
-      button.style.fontWeight = "bold";
-      button.style.fontSize = "11px";
-      button.style.zIndex = "500";
-      button.style.touchAction = "none";
-      button.style.userSelect = "none";
 
-      document.body.appendChild(button);
+      button.style.color =
+        "white";
+
+      button.style.fontWeight =
+        "bold";
+
+      button.style.fontSize =
+        "11px";
+
+      button.style.zIndex =
+        "500";
+
+      button.style.touchAction =
+        "none";
+
+      document.body.appendChild(
+        button
+      );
     }
 
     return button;
   }
 
   const fireButton =
-    createButton("lawangFire", "FIRE", 25, 35);
+    createButton(
+      "lawangFire",
+      "FIRE",
+      25,
+      35
+    );
 
   const jumpButton =
-    createButton("lawangJump", "JUMP", 100, 35);
+    createButton(
+      "lawangJump",
+      "JUMP",
+      100,
+      35
+    );
 
   const gunButton =
-    createButton("lawangGun", "GUN", 100, 110);
+    createButton(
+      "lawangGun",
+      "GUN",
+      100,
+      110
+    );
 
   const reloadButton =
-    createButton("lawangReload", "RELOAD", 175, 110);
+    createButton(
+      "lawangReload",
+      "RELOAD",
+      175,
+      110
+    );
 
   const crouchButton =
-    createButton("lawangCrouch", "CROUCH", 250, 35);
+    createButton(
+      "lawangCrouch",
+      "CROUCH",
+      250,
+      35
+    );
 
   const emoteButton =
-    createButton("lawangEmote", "EMOTE", 250, 110);
+    createButton(
+      "lawangEmote",
+      "EMOTE",
+      250,
+      110
+    );
 
   const startButton =
-    createButton("lawangStart", "START", 25, 110);
+    createButton(
+      "lawangStart",
+      "START",
+      25,
+      110
+    );
 
   const lobbyButton =
-    createButton("lawangLobby", "LOBBY", 325, 110);
+    createButton(
+      "lawangLobby",
+      "LOBBY",
+      325,
+      110
+    );
 
   /* =======================================================
      CROSSHAIR
      ======================================================= */
 
   let crosshair =
-    document.getElementById("lawangCrosshair");
+    document.getElementById(
+      "lawangCrosshair"
+    );
 
   if (!crosshair) {
-    crosshair = document.createElement("div");
-    crosshair.id = "lawangCrosshair";
 
-    crosshair.textContent = "+";
+    crosshair =
+      document.createElement(
+        "div"
+      );
 
-    crosshair.style.position = "fixed";
-    crosshair.style.left = "50%";
-    crosshair.style.top = "50%";
+    crosshair.id =
+      "lawangCrosshair";
+
+    crosshair.textContent =
+      "+";
+
+    crosshair.style.position =
+      "fixed";
+
+    crosshair.style.left =
+      "50%";
+
+    crosshair.style.top =
+      "50%";
+
     crosshair.style.transform =
       "translate(-50%,-50%)";
-    crosshair.style.color = "white";
-    crosshair.style.fontSize = "30px";
-    crosshair.style.fontWeight = "bold";
-    crosshair.style.zIndex = "400";
-    crosshair.style.pointerEvents = "none";
 
-    document.body.appendChild(crosshair);
+    crosshair.style.color =
+      "white";
+
+    crosshair.style.fontSize =
+      "30px";
+
+    crosshair.style.zIndex =
+      "400";
+
+    crosshair.style.pointerEvents =
+      "none";
+
+    document.body.appendChild(
+      crosshair
+    );
   }
 
   /* =======================================================
@@ -234,15 +720,24 @@
      ======================================================= */
 
   const joystick =
-    document.getElementById("joystick");
+    document.getElementById(
+      "joystick"
+    );
 
   const knob =
-    document.getElementById("joystickKnob");
+    document.getElementById(
+      "joystickKnob"
+    ) ||
+    document.getElementById(
+      "knob"
+    );
 
   function resetJoystick() {
+
     state.joystickX = 0;
     state.joystickY = 0;
-    state.joystickTouch = null;
+    state.joystickTouch =
+      null;
 
     if (knob) {
       knob.style.transform =
@@ -250,23 +745,32 @@
     }
   }
 
-  function updateJoystick(touch) {
-    if (!joystick) return;
+  function updateJoystick(
+    touch
+  ) {
+
+    if (!joystick) {
+      return;
+    }
 
     const rect =
       joystick.getBoundingClientRect();
 
     const centerX =
-      rect.left + rect.width / 2;
+      rect.left +
+      rect.width / 2;
 
     const centerY =
-      rect.top + rect.height / 2;
+      rect.top +
+      rect.height / 2;
 
     let x =
-      touch.clientX - centerX;
+      touch.clientX -
+      centerX;
 
     let y =
-      touch.clientY - centerY;
+      touch.clientY -
+      centerY;
 
     const max =
       Math.min(
@@ -275,11 +779,24 @@
       ) * 0.32;
 
     const distance =
-      Math.hypot(x, y);
+      Math.hypot(
+        x,
+        y
+      );
 
-    if (distance > max) {
-      x = x / distance * max;
-      y = y / distance * max;
+    if (
+      distance > max
+    ) {
+
+      x =
+        x /
+        distance *
+        max;
+
+      y =
+        y /
+        distance *
+        max;
     }
 
     state.joystickX =
@@ -289,6 +806,7 @@
       y / max;
 
     if (knob) {
+
       knob.style.transform =
         `translate(${x}px,${y}px)`;
     }
@@ -299,6 +817,7 @@
     joystick.addEventListener(
       "touchstart",
       event => {
+
         event.preventDefault();
 
         const touch =
@@ -307,7 +826,9 @@
         state.joystickTouch =
           touch.identifier;
 
-        updateJoystick(touch);
+        updateJoystick(
+          touch
+        );
       },
       { passive: false }
     );
@@ -315,53 +836,66 @@
     joystick.addEventListener(
       "touchmove",
       event => {
+
         event.preventDefault();
 
-        for (const touch of event.changedTouches) {
+        for (
+          const touch
+          of event.changedTouches
+        ) {
+
           if (
             touch.identifier ===
             state.joystickTouch
           ) {
-            updateJoystick(touch);
+
+            updateJoystick(
+              touch
+            );
           }
         }
       },
       { passive: false }
     );
 
-    ["touchend", "touchcancel"].forEach(
-      type => {
+    ["touchend","touchcancel"]
+      .forEach(type => {
 
         joystick.addEventListener(
           type,
           event => {
 
-            for (const touch of event.changedTouches) {
+            for (
+              const touch
+              of event.changedTouches
+            ) {
+
               if (
                 touch.identifier ===
                 state.joystickTouch
               ) {
+
                 resetJoystick();
               }
             }
-
           },
           { passive: false }
         );
-
-      }
-    );
+      });
   }
 
   /* =======================================================
-     CAMERA TOUCH
+     CAMERA
      ======================================================= */
 
   const cameraArea =
-    document.getElementById("cameraArea");
+    document.getElementById(
+      "cameraArea"
+    );
 
   const cameraTarget =
-    cameraArea || document.body;
+    cameraArea ||
+    document.body;
 
   cameraTarget.addEventListener(
     "touchstart",
@@ -376,7 +910,9 @@
         return;
       }
 
-      if (event.touches.length !== 1) {
+      if (
+        event.touches.length !== 1
+      ) {
         return;
       }
 
@@ -384,11 +920,13 @@
         event.touches[0];
 
       state.cameraTouch = {
-        id: touch.identifier,
-        x: touch.clientX,
-        y: touch.clientY
+        id:
+          touch.identifier,
+        x:
+          touch.clientX,
+        y:
+          touch.clientY
       };
-
     },
     { passive: true }
   );
@@ -397,11 +935,16 @@
     "touchmove",
     event => {
 
-      if (!state.cameraTouch) {
+      if (
+        !state.cameraTouch
+      ) {
         return;
       }
 
-      for (const touch of event.changedTouches) {
+      for (
+        const touch
+        of event.changedTouches
+      ) {
 
         if (
           touch.identifier !==
@@ -437,7 +980,6 @@
         state.cameraTouch.y =
           touch.clientY;
       }
-
     },
     { passive: true }
   );
@@ -445,19 +987,13 @@
   cameraTarget.addEventListener(
     "touchend",
     () => {
-      state.cameraTouch = null;
-    }
-  );
-
-  cameraTarget.addEventListener(
-    "touchcancel",
-    () => {
-      state.cameraTouch = null;
+      state.cameraTouch =
+        null;
     }
   );
 
   /* =======================================================
-     BUTTON HANDLER
+     BUTTON SYSTEM
      ======================================================= */
 
   function holdButton(
@@ -469,6 +1005,7 @@
     button.addEventListener(
       "touchstart",
       event => {
+
         event.preventDefault();
         down();
       },
@@ -478,6 +1015,7 @@
     button.addEventListener(
       "touchend",
       event => {
+
         event.preventDefault();
         up();
       },
@@ -487,6 +1025,7 @@
     button.addEventListener(
       "touchcancel",
       event => {
+
         event.preventDefault();
         up();
       },
@@ -561,31 +1100,11 @@
   );
 
   /* =======================================================
-     OLD RUN BUTTON SUPPORT
-     ======================================================= */
-
-  const oldRun =
-    document.getElementById("runButton");
-
-  if (oldRun) {
-
-    holdButton(
-      oldRun,
-      () => {
-        state.running = true;
-      },
-      () => {
-        state.running = false;
-      }
-    );
-
-  }
-
-  /* =======================================================
      WEAPON MODEL
      ======================================================= */
 
-  let weaponModel = null;
+  let weaponModel =
+    null;
 
   function removeWeapon() {
 
@@ -595,7 +1114,8 @@
         weaponModel
       );
 
-      weaponModel = null;
+      weaponModel =
+        null;
     }
   }
 
@@ -604,7 +1124,9 @@
     removeWeapon();
 
     const weapon =
-      weapons[state.weaponIndex];
+      weapons[
+        state.weaponIndex
+      ];
 
     const group =
       new THREE.Group();
@@ -612,42 +1134,53 @@
     const body =
       new THREE.Mesh(
         new THREE.BoxGeometry(
-          weapon.name === "SHOTGUN"
+          weapon.name ===
+          "SHOTGUN"
             ? 0.22
             : 0.18,
 
           0.18,
 
-          weapon.name === "PISTOL"
+          weapon.name ===
+          "PISTOL"
             ? 0.55
             : 1.15
         ),
 
         new THREE.MeshStandardMaterial({
-          color: weapon.color,
-          metalness: 0.7,
-          roughness: 0.3
+          color:
+            weapon.color,
+          metalness:
+            0.7,
+          roughness:
+            0.3
         })
       );
 
-    body.position.z = -0.25;
+    body.position.z =
+      -0.25;
 
-    group.add(body);
+    group.add(
+      body
+    );
 
     const barrel =
       new THREE.Mesh(
         new THREE.CylinderGeometry(
           0.045,
           0.045,
-          weapon.name === "PISTOL"
+          weapon.name ===
+          "PISTOL"
             ? 0.45
             : 0.9,
           10
         ),
 
         new THREE.MeshStandardMaterial({
-          color: 0x111111,
-          metalness: 0.8
+          color:
+            0x111111,
+          metalness:
+            0.8
         })
       );
 
@@ -657,7 +1190,9 @@
     barrel.position.z =
       -0.75;
 
-    group.add(barrel);
+    group.add(
+      barrel
+    );
 
     const grip =
       new THREE.Mesh(
@@ -668,7 +1203,8 @@
         ),
 
         new THREE.MeshStandardMaterial({
-          color: 0x151515
+          color:
+            0x151515
         })
       );
 
@@ -678,7 +1214,9 @@
       0.05
     );
 
-    group.add(grip);
+    group.add(
+      grip
+    );
 
     group.position.set(
       0.48,
@@ -689,16 +1227,20 @@
     group.rotation.x =
       -0.15;
 
-    player.add(group);
+    player.add(
+      group
+    );
 
-    weaponModel = group;
+    weaponModel =
+      group;
   }
 
   function switchWeapon() {
 
     if (
       state.reloading ||
-      state.phase === "AIRCRAFT"
+      state.phase ===
+      "AIRCRAFT"
     ) {
       return;
     }
@@ -709,7 +1251,8 @@
       state.weaponIndex >=
       weapons.length
     ) {
-      state.weaponIndex = 0;
+      state.weaponIndex =
+        0;
     }
 
     state.ammo =
@@ -732,6 +1275,7 @@
       state.phase ===
       "AIRCRAFT"
     ) {
+
       dropFromAircraft();
       return;
     }
@@ -745,12 +1289,14 @@
 
     if (
       state.jumping ||
-      player.position.y > 0.05
+      player.position.y >
+      0.05
     ) {
       return;
     }
 
-    state.jumping = true;
+    state.jumping =
+      true;
 
     state.velocityY =
       7.5;
@@ -764,7 +1310,8 @@
 
     if (
       state.reloading ||
-      state.phase !== "BATTLE"
+      state.phase !==
+      "BATTLE"
     ) {
       return;
     }
@@ -781,7 +1328,8 @@
       return;
     }
 
-    state.reloading = true;
+    state.reloading =
+      true;
 
     updateHUD();
 
@@ -820,14 +1368,17 @@
         ),
 
         new THREE.MeshBasicMaterial({
-          color: 0xffcc33
+          color:
+            0xffcc33
         })
       );
 
     flash.position.z =
       -0.9;
 
-    weaponModel.add(flash);
+    weaponModel.add(
+      flash
+    );
 
     setTimeout(
       () => {
@@ -835,11 +1386,11 @@
         if (
           flash.parent
         ) {
+
           flash.parent.remove(
             flash
           );
         }
-
       },
       60
     );
@@ -858,7 +1409,9 @@
       return;
     }
 
-    if (state.reloading) {
+    if (
+      state.reloading
+    ) {
       return;
     }
 
@@ -877,6 +1430,7 @@
     if (
       state.ammo <= 0
     ) {
+
       reload();
       return;
     }
@@ -888,9 +1442,6 @@
 
     muzzleFlash();
 
-    const origin =
-      camera.position.clone();
-
     const direction =
       new THREE.Vector3();
 
@@ -900,7 +1451,7 @@
 
     const ray =
       new THREE.Raycaster(
-        origin,
+        camera.position.clone(),
         direction,
         0,
         weapon.range
@@ -930,7 +1481,9 @@
         false
       );
 
-    if (hits.length) {
+    if (
+      hits.length
+    ) {
 
       const hit =
         hits[0].object;
@@ -943,21 +1496,19 @@
         const damage =
           hit.userData.part ===
           "HEAD"
-
             ? weapon.headDamage
-
             : weapon.bodyDamage;
 
         enemy.hp -=
           damage;
 
-        enemy.hitTimer =
-          100;
-
         if (
           enemy.hp <= 0
         ) {
-          killEnemy(enemy);
+
+          killEnemy(
+            enemy
+          );
         }
       }
     }
@@ -966,7 +1517,7 @@
   }
 
   /* =======================================================
-     ENEMY
+     ENEMIES
      ======================================================= */
 
   function createEnemy(
@@ -979,12 +1530,14 @@
 
     const skin =
       new THREE.MeshStandardMaterial({
-        color: 0xd69b72
+        color:
+          0xd69b72
       });
 
     const clothes =
       new THREE.MeshStandardMaterial({
-        color: 0x9b2226
+        color:
+          0x9b2226
       });
 
     const body =
@@ -1035,17 +1588,11 @@
       0
     );
 
-    leftLeg.userData.part =
-      "BODY";
-
     const rightLeg =
       leftLeg.clone();
 
     rightLeg.position.x =
       0.22;
-
-    rightLeg.userData.part =
-      "BODY";
 
     group.add(
       body,
@@ -1060,14 +1607,15 @@
       z
     );
 
-    scene.add(group);
+    scene.add(
+      group
+    );
 
     const enemy = {
       group,
       hp: 100,
       maxHP: 100,
       dead: false,
-      hitTimer: 0,
       meshes: [
         body,
         head,
@@ -1105,14 +1653,14 @@
     state.enemies = [];
 
     const locations = [
-      [-18, -16],
-      [18, -16],
-      [-20, 14],
-      [20, 14],
-      [0, -24],
-      [-28, 0],
-      [28, 0],
-      [0, 25]
+      [-18,-16],
+      [18,-16],
+      [-20,14],
+      [20,14],
+      [0,-24],
+      [-28,0],
+      [28,0],
+      [0,25]
     ];
 
     for (
@@ -1137,10 +1685,10 @@
       return;
     }
 
-    enemy.dead = true;
+    enemy.dead =
+      true;
 
     state.kills++;
-
     state.score +=
       100;
 
@@ -1177,10 +1725,6 @@
       4000
     );
   }
-
-  /* =======================================================
-     ENEMY MOVEMENT
-     ======================================================= */
 
   function updateEnemies(
     dt
@@ -1225,27 +1769,17 @@
 
         enemy.group.position.x +=
           dx / distance *
-          dt *
-          1.0;
+          dt;
 
         enemy.group.position.z +=
           dz / distance *
-          dt *
-          1.0;
+          dt;
 
         enemy.group.rotation.y =
           Math.atan2(
             dx,
             dz
           );
-      }
-
-      if (
-        enemy.hitTimer >
-        0
-      ) {
-        enemy.hitTimer -=
-          dt * 1000;
       }
     }
   }
@@ -1260,6 +1794,7 @@
       const pickup
       of state.pickups
     ) {
+
       scene.remove(
         pickup
       );
@@ -1282,7 +1817,8 @@
           ),
 
           new THREE.MeshStandardMaterial({
-            color: 0xffcc22
+            color:
+              0xffcc22
           })
         );
 
@@ -1321,13 +1857,10 @@
         continue;
       }
 
-      const distance =
+      if (
         pickup.position.distanceTo(
           player.position
-        );
-
-      if (
-        distance < 1.5
+        ) < 1.5
       ) {
 
         pickup.visible =
@@ -1351,12 +1884,12 @@
     dt
   ) {
 
-    /*
-      IMPORTANT:
-      Movement works in BATTLE.
-      Lobby movement is also allowed
-      so we can test joystick there.
-    */
+    if (
+      state.phase ===
+      "AIRCRAFT"
+    ) {
+      return;
+    }
 
     const magnitude =
       Math.hypot(
@@ -1465,65 +1998,56 @@
         );
 
       if (
-        parts.leftLeg
+        lawangParts.leftLeg
       ) {
-        parts.leftLeg.rotation.x =
+        lawangParts.leftLeg.rotation.x =
           swing;
       }
 
       if (
-        parts.rightLeg
+        lawangParts.rightLeg
       ) {
-        parts.rightLeg.rotation.x =
+        lawangParts.rightLeg.rotation.x =
           -swing;
       }
 
       if (
-        parts.leftArm
+        lawangParts.leftArm
       ) {
-        parts.leftArm.rotation.x =
+        lawangParts.leftArm.rotation.x =
           -swing * 0.7;
       }
 
       if (
-        parts.rightArm
+        lawangParts.rightArm
       ) {
-        parts.rightArm.rotation.x =
+        lawangParts.rightArm.rotation.x =
           swing * 0.7;
       }
 
     } else {
 
-      if (
-        parts.leftLeg
-      ) {
-        parts.leftLeg.rotation.x *=
-          0.82;
-      }
+      [
+        "leftLeg",
+        "rightLeg",
+        "leftArm",
+        "rightArm"
+      ].forEach(
+        name => {
 
-      if (
-        parts.rightLeg
-      ) {
-        parts.rightLeg.rotation.x *=
-          0.82;
-      }
+          if (
+            lawangParts[name]
+          ) {
 
-      if (
-        parts.leftArm
-      ) {
-        parts.leftArm.rotation.x *=
-          0.82;
-      }
-
-      if (
-        parts.rightArm
-      ) {
-        parts.rightArm.rotation.x *=
-          0.82;
-      }
+            lawangParts[name]
+              .rotation.x *=
+              0.82;
+          }
+        }
+      );
     }
 
-    /* JUMP PHYSICS */
+    /* JUMP */
 
     if (
       state.jumping ||
@@ -1531,16 +2055,13 @@
     ) {
 
       state.velocityY -=
-        18 *
-        dt;
+        18 * dt;
 
       player.position.y +=
-        state.velocityY *
-        dt;
+        state.velocityY * dt;
 
       if (
-        player.position.y <=
-        0
+        player.position.y <= 0
       ) {
 
         player.position.y =
@@ -1556,21 +2077,18 @@
 
     /* MAP LIMIT */
 
-    const limit =
-      45;
-
     player.position.x =
       THREE.MathUtils.clamp(
         player.position.x,
-        -limit,
-        limit
+        -45,
+        45
       );
 
     player.position.z =
       THREE.MathUtils.clamp(
         player.position.z,
-        -limit,
-        limit
+        -45,
+        45
       );
   }
 
@@ -1586,31 +2104,33 @@
       new THREE.Vector3(
         player.position.x,
         player.position.y +
-          (
-            state.crouching
-              ? 1.3
-              : 2
-          ),
+        (
+          state.crouching
+            ? 1.3
+            : 2
+        ),
         player.position.z
       );
 
-  let distance =
-  state.crouching
-    ? 5.3
-    : 6.8;
+    let distance =
+      state.crouching
+        ? 5.3
+        : 6.8;
 
-if (
-  state.phase === "AIRCRAFT"
-) {
-  distance = 8;
-}
+    if (
+      state.phase ===
+      "AIRCRAFT"
+    ) {
+      distance = 7;
+    }
 
-if (
-  state.phase === "BATTLE" &&
-  player.position.y > 5
-) {
-  distance = 10;
-}
+    if (
+      state.phase ===
+      "BATTLE" &&
+      player.position.y > 5
+    ) {
+      distance = 10;
+    }
 
     const horizontal =
       Math.cos(
@@ -1655,7 +2175,7 @@ if (
   }
 
   /* =======================================================
-     EMOTES
+     EMOTE
      ======================================================= */
 
   function playEmote() {
@@ -1690,8 +2210,7 @@ if (
   ) {
 
     if (
-      state.emoteTimer <=
-      0
+      state.emoteTimer <= 0
     ) {
       return;
     }
@@ -1709,10 +2228,11 @@ if (
     ) {
 
       if (
-        parts.rightArm
+        lawangParts.rightArm
       ) {
 
-        parts.rightArm.rotation.z =
+        lawangParts.rightArm
+          .rotation.z =
           Math.sin(time) *
           0.8;
       }
@@ -1733,40 +2253,43 @@ if (
     ) {
 
       if (
-        parts.leftArm
+        lawangParts.leftArm
       ) {
-        parts.leftArm.rotation.z =
+
+        lawangParts.leftArm
+          .rotation.z =
           -1.2;
       }
 
       if (
-        parts.rightArm
+        lawangParts.rightArm
       ) {
-        parts.rightArm.rotation.z =
+
+        lawangParts.rightArm
+          .rotation.z =
           1.2;
       }
     }
 
     if (
-      state.emoteTimer <=
-      0
+      state.emoteTimer <= 0
     ) {
 
       state.emote =
         "NONE";
 
       if (
-        parts.leftArm
+        lawangParts.leftArm
       ) {
-        parts.leftArm.rotation.z =
-          0;
+        lawangParts.leftArm
+          .rotation.z = 0;
       }
 
       if (
-        parts.rightArm
+        lawangParts.rightArm
       ) {
-        parts.rightArm.rotation.z =
-          0;
+        lawangParts.rightArm
+          .rotation.z = 0;
       }
     }
   }
@@ -1775,326 +2298,479 @@ if (
      AIRCRAFT
      ======================================================= */
 
-  
-    function createAircraft() {
+  function createAircraft() {
 
-  let aircraft = scene.getObjectByName("LAWANG_AIRCRAFT");
+    let aircraft =
+      scene.getObjectByName(
+        "LAWANG_AIRCRAFT"
+      );
 
-  if (aircraft) {
-    return aircraft;
-  }
+    if (aircraft) {
+      return aircraft;
+    }
 
-  aircraft = new THREE.Group();
-  aircraft.name = "LAWANG_AIRCRAFT";
+    aircraft =
+      new THREE.Group();
 
-  // Main body
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(3, 1, 8),
-    new THREE.MeshStandardMaterial({
-      color: 0x555555,
-      metalness: 0.4,
-      roughness: 0.5
-    })
-  );
+    aircraft.name =
+      "LAWANG_AIRCRAFT";
 
-  aircraft.add(body);
+    /* MAIN BODY */
 
-  // Left wing
-  const leftWing = new THREE.Mesh(
-    new THREE.BoxGeometry(7, 0.25, 1.5),
-    new THREE.MeshStandardMaterial({
-      color: 0x777777
-    })
-  );
-
-  leftWing.position.x = -3.5;
-  aircraft.add(leftWing);
-
-  // Right wing
-  const rightWing = leftWing.clone();
-
-  rightWing.position.x = 3.5;
-  aircraft.add(rightWing);
-
-  // Tail
-  const tail = new THREE.Mesh(
-    new THREE.BoxGeometry(2, 1.8, 1),
-    new THREE.MeshStandardMaterial({
-      color: 0x444444
-    })
-  );
-
-  tail.position.z = 3.2;
-  tail.position.y = 0.7;
-
-  aircraft.add(tail);
-
-  // Aircraft position
-  aircraft.position.set(
-    0,
-    20,
-    -10
-  );
-
-  scene.add(aircraft);
-
-  console.log("LAWANG AIRCRAFT CREATED");
-
-  return aircraft;
-}
-function startMatch() {
-
-  console.log("LAWANG: MATCH START");
-
-  /* ==============================
-     GAME STATE
-     ============================== */
-
-  state.phase = "AIRCRAFT";
-
-  state.hp = 100;
-  state.kills = 0;
-  state.score = 0;
-
-  state.firing = false;
-  state.reloading = false;
-  state.running = false;
-  state.crouching = false;
-
-  /* ==============================
-     CREATE AIRCRAFT
-     ============================== */
-
-  const aircraft = createAircraft();
-
-  aircraft.visible = true;
-
-  aircraft.position.set(
-    0,
-    30,
-    0
-  );
-
-  aircraft.rotation.set(
-    0,
-    0,
-    0
-  );
-
-  /* ==============================
-     PLAYER ENTERS AIRCRAFT
-     ============================== */
-
-  player.visible = true;
-
-  player.userData.inAircraft = true;
-
-  /*
-     Player is placed inside
-     the aircraft cabin.
-  */
-
-  player.position.set(
-    0,
-    30,
-    -1
-  );
-
-  player.rotation.y = Math.PI;
-
-  /* ==============================
-     CAMERA INSIDE AIRCRAFT
-     ============================== */
-
-  camera.position.set(
-    3,
-    33,
-    4
-  );
-
-  camera.lookAt(
-    0,
-    31,
-    -5
-  );
-
-  /* ==============================
-     AIRCRAFT MODE
-     ============================== */
-
-  state.aircraftTime = 0;
-
-  state.canJumpFromAircraft = true;
-
-  state.aircraftMoving = true;
-
-  /* ==============================
-     HUD
-     ============================== */
-
-  const status =
-    document.getElementById("status");
-
-  if (status) {
-    status.textContent =
-      "✈️ INSIDE AIRCRAFT";
-  }
-
-  updateHUD();
-
-  console.log(
-    "LAWANG: Player is inside aircraft"
-  );
-}
-window.lawangStartAircraft = startMatch;
-function createAircraftFriends() {
-
-  const aircraft =
-    createAircraft();
-
-  const friends =
-    new THREE.Group();
-
-  friends.name =
-    "AIRCRAFT_FRIENDS";
-
-  const positions = [
-    [-0.8, -0.45, -2],
-    [ 0.8, -0.45, -2],
-    [-0.8, -0.45,  0],
-    [ 0.8, -0.45,  0],
-    [-0.8, -0.45,  2],
-    [ 0.8, -0.45,  2]
-  ];
-
-  for (
-    const position
-    of positions
-  ) {
-
-    const friend =
+    const body =
       new THREE.Mesh(
         new THREE.BoxGeometry(
-          0.5,
-          1.3,
-          0.35
+          3,
+          1.2,
+          8
         ),
+
         new THREE.MeshStandardMaterial({
           color:
-            Math.random() *
-            0xffffff
+            0x4d5966,
+          metalness:
+            0.55,
+          roughness:
+            0.4
         })
       );
 
-    friend.position.set(
-      position[0],
-      position[1],
-      position[2]
+    aircraft.add(
+      body
     );
 
-    friends.add(friend);
+    /* WINGS */
+
+    const wingMaterial =
+      new THREE.MeshStandardMaterial({
+        color:
+          0x66727d,
+        metalness:
+          0.5
+      });
+
+    const leftWing =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          8,
+          0.22,
+          1.7
+        ),
+        wingMaterial
+      );
+
+    leftWing.position.x =
+      -4;
+
+    aircraft.add(
+      leftWing
+    );
+
+    const rightWing =
+      leftWing.clone();
+
+    rightWing.position.x =
+      4;
+
+    aircraft.add(
+      rightWing
+    );
+
+    /* TAIL */
+
+    const tail =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          2,
+          2,
+          1.2
+        ),
+
+        new THREE.MeshStandardMaterial({
+          color:
+            0x3d4650
+        })
+      );
+
+    tail.position.set(
+      0,
+      0.8,
+      3.1
+    );
+
+    aircraft.add(
+      tail
+    );
+
+    /* WINDOWS */
+
+    const windowMaterial =
+      new THREE.MeshStandardMaterial({
+        color:
+          0x152b42,
+        metalness:
+          0.8,
+        roughness:
+          0.15
+      });
+
+    for (
+      let side of [-1,1]
+    ) {
+
+      for (
+        let i = -2;
+        i <= 2;
+        i++
+      ) {
+
+        const window =
+          new THREE.Mesh(
+            new THREE.BoxGeometry(
+              0.08,
+              0.55,
+              0.8
+            ),
+            windowMaterial
+          );
+
+        window.position.set(
+          side * 1.53,
+          0.15,
+          i * 1.1
+        );
+
+        aircraft.add(
+          window
+        );
+      }
+    }
+
+    /* AIRCRAFT DOOR */
+
+    const door =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          0.12,
+          1.5,
+          1.1
+        ),
+
+        new THREE.MeshStandardMaterial({
+          color:
+            0x20252b
+        })
+      );
+
+    door.position.set(
+      1.55,
+      0,
+      0
+    );
+
+    aircraft.add(
+      door
+    );
+
+    aircraft.position.set(
+      0,
+      30,
+      0
+    );
+
+    aircraft.visible =
+      false;
+
+    scene.add(
+      aircraft
+    );
+
+    return aircraft;
   }
 
-  aircraft.add(friends);
+  /* =======================================================
+     AIRCRAFT FRIENDS
+     ======================================================= */
 
-  return friends;
-}
-  function updateAircraft(dt) {
+  function createAircraftFriends() {
 
-  if (
-    state.phase !== "AIRCRAFT"
+    const aircraft =
+      createAircraft();
+
+    let old =
+      aircraft.getObjectByName(
+        "AIRCRAFT_FRIENDS"
+      );
+
+    if (old) {
+      aircraft.remove(old);
+    }
+
+    const friends =
+      new THREE.Group();
+
+    friends.name =
+      "AIRCRAFT_FRIENDS";
+
+    const positions = [
+      [-0.8,0,-2],
+      [0.8,0,-2],
+      [-0.8,0,0],
+      [0.8,0,0],
+      [-0.8,0,2],
+      [0.8,0,2]
+    ];
+
+    positions.forEach(
+      (position,index) => {
+
+        const friend =
+          new THREE.Mesh(
+            new THREE.BoxGeometry(
+              0.55,
+              1.7,
+              0.45
+            ),
+
+            new THREE.MeshStandardMaterial({
+              color:
+                [
+                  0x2266aa,
+                  0xaa3333,
+                  0x228855,
+                  0xaa7722,
+                  0x8844aa,
+                  0xdddddd
+                ][index]
+            })
+          );
+
+        friend.position.set(
+          position[0],
+          0.9,
+          position[2]
+        );
+
+        friends.add(
+          friend
+        );
+      }
+    );
+
+    aircraft.add(
+      friends
+    );
+
+    return friends;
+  }
+
+  /* =======================================================
+     START MATCH
+     ======================================================= */
+
+  function startMatch() {
+
+    console.log(
+      "LAWANG: MATCH START"
+    );
+
+    state.phase =
+      "AIRCRAFT";
+
+    state.hp =
+      100;
+
+    state.kills =
+      0;
+
+    state.score =
+      0;
+
+    state.firing =
+      false;
+
+    state.reloading =
+      false;
+
+    state.running =
+      false;
+
+    state.crouching =
+      false;
+
+    const aircraft =
+      createAircraft();
+
+    aircraft.visible =
+      true;
+
+    aircraft.position.set(
+      0,
+      30,
+      0
+    );
+
+    aircraft.rotation.set(
+      0,
+      0,
+      0
+    );
+
+    createAircraftFriends();
+
+    /* PLAYER INSIDE */
+
+    player.visible =
+      true;
+
+    player.userData.inAircraft =
+      true;
+
+    player.position.set(
+      0,
+      29.4,
+      0
+    );
+
+    player.rotation.y =
+      Math.PI;
+
+    state.aircraftTime =
+      0;
+
+    state.canJumpFromAircraft =
+      true;
+
+    updateHUD();
+
+    console.log(
+      "LAWANG: PLAYER ENTERED AIRCRAFT"
+    );
+  }
+
+  /* Global function */
+
+  window.lawangStartAircraft =
+    startMatch;
+
+  /* =======================================================
+     AIRCRAFT UPDATE
+     ======================================================= */
+
+  function updateAircraft(
+    dt
   ) {
-    return;
-  }
 
-  const aircraft =
-    createAircraft();
+    if (
+      state.phase !==
+      "AIRCRAFT"
+    ) {
+      return;
+    }
 
-  aircraft.position.y -=
-    dt * 2.5;
+    const aircraft =
+      createAircraft();
 
-  aircraft.position.z +=
-    dt * 2;
+    aircraft.visible =
+      true;
 
-  /*
-    PLAYER INSIDE AIRCRAFT
-  */
+    state.aircraftTime +=
+      dt;
 
-  if (player.visible) {
+    /* Move aircraft */
+
+    aircraft.position.y -=
+      dt * 2.5;
+
+    aircraft.position.z +=
+      dt * 2;
+
+    /* Keep player inside */
 
     player.position.x =
       aircraft.position.x;
 
     player.position.y =
-      aircraft.position.y - 0.4;
+      aircraft.position.y - 0.6;
 
     player.position.z =
-      aircraft.position.z + 1;
+      aircraft.position.z;
 
+    /* Aircraft rotation */
+
+    aircraft.rotation.y =
+      Math.sin(
+        state.aircraftTime *
+        0.3
+      ) * 0.03;
+
+    /* Reset flight */
+
+    if (
+      aircraft.position.y <
+      8
+    ) {
+
+      aircraft.position.y =
+        30;
+
+      aircraft.position.z =
+        0;
+    }
+
+    updateHUD();
   }
 
-  /*
-    RESET AIRCRAFT
-  */
-
-  if (
-    aircraft.position.y < 8
-  ) {
-
-    aircraft.position.y =
-      30;
-
-    aircraft.position.z =
-      0;
-  }
-}
+  /* =======================================================
+     DROP FROM AIRCRAFT
+     ======================================================= */
 
   function dropFromAircraft() {
 
-  if (
-    state.phase !== "AIRCRAFT"
-  ) {
-    return;
+    if (
+      state.phase !==
+      "AIRCRAFT"
+    ) {
+      return;
+    }
+
+    const aircraft =
+      createAircraft();
+
+    state.phase =
+      "BATTLE";
+
+    player.userData.inAircraft =
+      false;
+
+    player.visible =
+      true;
+
+    player.position.set(
+      aircraft.position.x,
+      aircraft.position.y - 1,
+      aircraft.position.z
+    );
+
+    state.jumping =
+      true;
+
+    state.velocityY =
+      -2;
+
+    aircraft.visible =
+      true;
+
+    spawnEnemies();
+
+    spawnPickups();
+
+    updateHUD();
+
+    console.log(
+      "LAWANG: PLAYER JUMPED FROM AIRCRAFT"
+    );
   }
-
-  const aircraft =
-    createAircraft();
-
-  state.phase =
-    "BATTLE";
-
-  player.visible =
-    true;
-
-  /*
-    DROP POSITION
-  */
-
-  player.position.set(
-    aircraft.position.x,
-    aircraft.position.y - 1,
-    aircraft.position.z
-  );
-
-  /*
-    START FALL
-  */
-
-  state.jumping = true;
-
-  state.velocityY = -2;
-
-  /*
-    SPAWN GAME
-  */
-
-  spawnEnemies();
-
-  spawnPickups();
-
-  updateHUD();
-
-}
 
   /* =======================================================
      LOBBY
@@ -2126,8 +2802,10 @@ function createAircraftFriends() {
         ),
 
         new THREE.MeshStandardMaterial({
-          color: 0x252b35,
-          metalness: 0.2
+          color:
+            0x252b35,
+          metalness:
+            0.2
         })
       );
 
@@ -2153,7 +2831,8 @@ function createAircraftFriends() {
           ),
 
           new THREE.MeshStandardMaterial({
-            color: 0x3d4655
+            color:
+              0x3d4655
           })
         );
 
@@ -2165,9 +2844,7 @@ function createAircraftFriends() {
       pillar.position.set(
         Math.cos(angle) *
           10,
-
         2.5,
-
         Math.sin(angle) *
           10
       );
@@ -2181,6 +2858,10 @@ function createAircraftFriends() {
       lobby
     );
   }
+
+  /* =======================================================
+     ENTER LOBBY
+     ======================================================= */
 
   function enterLobby() {
 
@@ -2199,8 +2880,27 @@ function createAircraftFriends() {
     state.crouching =
       false;
 
+    state.jumping =
+      false;
+
+    state.velocityY =
+      0;
+
+    const aircraft =
+      scene.getObjectByName(
+        "LAWANG_AIRCRAFT"
+      );
+
+    if (aircraft) {
+      aircraft.visible =
+        false;
+    }
+
     player.visible =
       true;
+
+    player.userData.inAircraft =
+      false;
 
     player.position.set(
       0,
@@ -2236,8 +2936,7 @@ function createAircraftFriends() {
       now;
 
     if (
-      state.fireTimer >
-      0
+      state.fireTimer > 0
     ) {
 
       state.fireTimer -=
@@ -2247,31 +2946,20 @@ function createAircraftFriends() {
     if (
       state.firing
     ) {
-
       shoot();
     }
 
-    updatePlayer(
-      dt
-    );
+    updatePlayer(dt);
 
-    updateCamera(
-      dt
-    );
+    updateCamera(dt);
 
-    updateEnemies(
-      dt
-    );
+    updateEnemies(dt);
 
     updatePickups();
 
-    updateEmote(
-      dt
-    );
+    updateEmote(dt);
 
-    updateAircraft(
-      dt
-    );
+    updateAircraft(dt);
 
     updateHUD();
 
@@ -2282,7 +2970,7 @@ function createAircraftFriends() {
   }
 
   /* =======================================================
-     START
+     INITIALIZE
      ======================================================= */
 
   buildLobby();
@@ -2297,6 +2985,10 @@ function createAircraftFriends() {
 
   requestAnimationFrame(
     gameLoop
+  );
+
+  console.log(
+    "LAWANG MOBILE 3D — GAME.JS READY"
   );
 
 })();
