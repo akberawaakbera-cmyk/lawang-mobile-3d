@@ -1946,6 +1946,7 @@ function startMatch() {
     "LAWANG: Player is inside aircraft"
   );
 }
+window.lawangStartAircraft = startMatch;
 function createAircraftFriends() {
 
   const aircraft =
