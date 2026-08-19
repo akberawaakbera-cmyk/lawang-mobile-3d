@@ -2,99 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport"
 content="width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
 viewport-fit=cover">
-
 <title>LAWANG MOBILE 3D</title>
-
 <style>
-
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
-
-html,
-body{
+html,body{
   margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#05080d;
+  background:#78b8e8;
   touch-action:none;
   font-family:Arial,sans-serif;
 }
-
 #game{
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   display:block;
+  touch-action:none;
 }
-
+/* HUD */
 #hud{
   position:fixed;
   top:15px;
   left:15px;
   z-index:100;
   color:white;
-  background:rgba(0,0,0,.55);
+  background:rgba(0,0,0,.58);
   padding:10px 14px;
   border-radius:12px;
   pointer-events:none;
+  line-height:1.5;
 }
-
 #title{
   font-weight:bold;
   font-size:16px;
-  margin-bottom:4px;
 }
-
-#menu{
-  position:fixed;
-  right:15px;
-  top:15px;
-  z-index:300;
-  display:flex;
-  gap:8px;
-}
-
-.menuBtn,
-.actionBtn{
-  border:1px solid rgba(255,255,255,.35);
-  background:rgba(0,0,0,.55);
-  color:white;
-  border-radius:10px;
-  padding:11px 14px;
-  font-weight:bold;
-}
-
-.menuBtn{
-  min-width:48px;
-}
-
-#lobbyText{
-  position:fixed;
-  left:50%;
-  top:70px;
-  transform:translateX(-50%);
-  color:white;
-  z-index:100;
-  text-align:center;
-  text-shadow:0 2px 6px black;
-  pointer-events:none;
-}
-
-#lobbyText h2{
-  margin:0 0 5px;
-}
-
+/* CAMERA */
 #cameraArea{
   position:fixed;
   left:30%;
@@ -104,7 +58,7 @@ body{
   z-index:150;
   touch-action:none;
 }
-
+/* JOYSTICK */
 #joystick{
   position:fixed;
   left:25px;
@@ -112,14 +66,12 @@ body{
   width:145px;
   height:145px;
   border-radius:50%;
-  border:2px solid rgba(255,255,255,.35);
-  background:rgba(255,255,255,.10);
+  border:2px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12);
   z-index:300;
   touch-action:none;
 }
-
-#joystickKnob,
-#knob{
+#joystickKnob{
   position:absolute;
   width:62px;
   height:62px;
@@ -129,82 +81,71 @@ body{
   margin-top:-31px;
   border-radius:50%;
   background:rgba(255,255,255,.32);
-  border:2px solid rgba(255,255,255,.65);
+  border:2px solid rgba(255,255,255,.7);
 }
-
-#actions{
-  position:fixed;
-  right:20px;
-  bottom:25px;
-  z-index:250;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.actionBtn{
-  min-width:115px;
-  text-align:center;
-}
-
-#weaponPanel{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  transform:translateX(-50%);
-  z-index:250;
-  display:flex;
-  gap:8px;
-}
-
-.weaponBtn{
-  min-width:75px;
-  padding:10px;
-  border:1px solid rgba(255,255,255,.35);
-  border-radius:10px;
-  background:rgba(0,0,0,.6);
-  color:white;
-  font-weight:bold;
-}
-
-.weaponBtn.active{
-  background:#2388ff;
-}
-
+/* STATUS */
 #status{
   position:fixed;
   left:50%;
-  bottom:5px;
+  bottom:8px;
   transform:translateX(-50%);
-  color:white;
-  background:rgba(0,0,0,.45);
-  padding:5px 12px;
-  border-radius:8px;
   z-index:400;
+  color:white;
+  background:rgba(0,0,0,.5);
+  padding:6px 14px;
+  border-radius:9px;
   font-size:12px;
   pointer-events:none;
 }
-
+/* LOBBY */
+#lobbyText{
+  position:fixed;
+  left:50%;
+  top:70px;
+  transform:translateX(-50%);
+  z-index:100;
+  color:white;
+  text-align:center;
+  text-shadow:0 2px 6px #000;
+  pointer-events:none;
+}
+#lobbyText h2{
+  margin:0 0 5px;
+}
+/* LOADING */
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:#08111c;
+  color:white;
+  font-size:21px;
+  font-weight:bold;
+  text-align:center;
+}
+/* BATTLE PANEL */
 #battlePanel{
   display:none;
   position:fixed;
   inset:0;
-  z-index:1000;
-  background:rgba(0,0,0,.82);
-  color:white;
+  z-index:2000;
+  background:rgba(0,0,0,.8);
   align-items:center;
   justify-content:center;
-  text-align:center;
 }
-
 #battleBox{
-  background:#101923;
+  width:85%;
+  max-width:380px;
   padding:25px;
   border-radius:18px;
-  width:85%;
-  max-width:400px;
+  background:#101923;
+  color:white;
+  text-align:center;
 }
-
 #battleBox button{
   width:100%;
   padding:14px;
@@ -214,273 +155,129 @@ body{
   background:#2388ff;
   color:white;
   font-weight:bold;
+  font-size:15px;
 }
-
-#ammo{
-  margin-top:3px;
+/* CROSSHAIR */
+#crosshair{
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  color:white;
+  font-size:28px;
+  font-weight:bold;
+  z-index:120;
+  pointer-events:none;
 }
-
+/* MOBILE */
 @media(max-width:600px){
-
   #hud{
     top:10px;
     left:10px;
     font-size:12px;
   }
-
   #lobbyText{
     top:65px;
   }
-
-  #joystick{
-    width:125px;
-    height:125px;
-    left:18px;
-    bottom:18px;
-  }
-
-  #weaponPanel{
-    bottom:155px;
-    max-width:90%;
-    overflow-x:auto;
-  }
-
-  .weaponBtn{
-    min-width:70px;
-    font-size:11px;
-  }
-
-  #actions{
-    right:12px;
-    bottom:18px;
-  }
-
-  .actionBtn{
-    min-width:95px;
-    padding:10px;
-  }
 }
-
 </style>
 </head>
-
 <body>
-
+<!-- GAME CANVAS -->
 <canvas id="game"></canvas>
-
 <!-- HUD -->
-
 <div id="hud">
-
   <div id="title">
-    LAWANG MOBILE
+    LAWANG MOBILE 3D
   </div>
-
   HP:
   <span id="hp">100</span>
-
   <br>
-
   Weapon:
   <span id="weapon">PISTOL</span>
-
   <br>
-
   Ammo:
   <span id="ammo">12/12</span>
-
   <br>
-
   Kills:
   <span id="kills">0</span>
-
   <br>
-
   Score:
   <span id="score">0</span>
-
 </div>
-
-
 <!-- LOBBY TITLE -->
-
 <div id="lobbyText">
-
-  <h2>3D LOBBY</h2>
-
+  <h2>LAWANG MOBILE</h2>
   <div>
-    LAWANG MOBILE
+    3D BATTLE WORLD
   </div>
-
 </div>
-
-
-<!-- MENU -->
-
-<div id="menu">
-
-  <button
-    class="menuBtn"
-    id="inventory">
-    🎒
-  </button>
-
-  <button
-    class="menuBtn"
-    id="settings">
-    ⚙️
-  </button>
-
-</div>
-
-
 <!-- CAMERA TOUCH AREA -->
-
 <div id="cameraArea"></div>
-
-
 <!-- JOYSTICK -->
-
 <div id="joystick">
-
   <div id="joystickKnob"></div>
-
 </div>
-
-
-<!-- BASIC ACTION BUTTONS -->
-
-<div id="actions">
-
-  <button
-    class="actionBtn"
-    id="jump">
-    JUMP
-  </button>
-
-  <button
-    class="actionBtn"
-    id="run">
-    RUN
-  </button>
-
-  <button
-    class="actionBtn"
-    id="emote">
-    EMOTE
-  </button>
-
-  <button
-    class="actionBtn"
-    id="startBattle">
-    ▶ START
-  </button>
-
+<!-- CROSSHAIR -->
+<div id="crosshair">
+  +
 </div>
-
-
-<!-- WEAPONS -->
-
-<div id="weaponPanel">
-
-  <button
-    class="weaponBtn active"
-    data-weapon="PISTOL">
-    🔫 PISTOL
-  </button>
-
-  <button
-    class="weaponBtn"
-    data-weapon="RIFLE">
-    🔫 RIFLE
-  </button>
-
-  <button
-    class="weaponBtn"
-    data-weapon="SHOTGUN">
-    🔫 SHOTGUN
-  </button>
-
-</div>
-
-
 <!-- STATUS -->
-
 <div id="status">
-  LOBBY
+  LOBBY READY
 </div>
-
-
-<!-- AIRCRAFT / BATTLE PANEL -->
-
+<!-- BATTLE MENU -->
 <div id="battlePanel">
-
   <div id="battleBox">
-
     <h2>
       LAWANG MOBILE
     </h2>
-
-    <p id="battleMessage">
+    <p>
       Battle Royale
     </p>
-
     <button id="planeButton">
       ✈️ ENTER AIRCRAFT
     </button>
-
     <button id="closeBattle">
       BACK TO LOBBY
     </button>
-
   </div>
-
 </div>
-
-
-<!-- IMPORTANT:
-     ONLY GAME.JS IS LOADED HERE.
-     ALL GAME LOGIC IS INSIDE GAME.JS.
+<!--
+=========================================================
+THREE.JS ENGINE
+=========================================================
 -->
-
 <script type="module">
-
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-
+/* ======================================================
+   GLOBAL THREE
+====================================================== */
 window.THREE = THREE;
-
-
-/* ==============================
+/* ======================================================
    CANVAS
-   ============================== */
-
+====================================================== */
 const canvas =
 document.getElementById("game");
-
-
-/* ==============================
+/* ======================================================
    SCENE
-   ============================== */
-
+====================================================== */
 const scene =
 new THREE.Scene();
-
+window.gameScene =
+scene;
 scene.background =
 new THREE.Color(0x78b8e8);
-
 scene.fog =
 new THREE.Fog(
   0x78b8e8,
-  35,
-  120
+  40,
+  130
 );
-
-
-/* ==============================
+/* ======================================================
    CAMERA
-   ============================== */
-
+====================================================== */
 const camera =
 new THREE.PerspectiveCamera(
   65,
@@ -488,119 +285,94 @@ new THREE.PerspectiveCamera(
   0.1,
   500
 );
-
 camera.position.set(
   0,
   4,
   8
 );
-
-
-/* ==============================
+window.gameCamera =
+camera;
+/* ======================================================
    RENDERER
-   ============================== */
-
+====================================================== */
 const renderer =
 new THREE.WebGLRenderer({
   canvas:canvas,
   antialias:true,
   powerPreference:"high-performance"
 });
-
 renderer.setPixelRatio(
   Math.min(
     window.devicePixelRatio || 1,
     2
   )
 );
-
 renderer.setSize(
   innerWidth,
   innerHeight
 );
-
-
-/* ==============================
-   LIGHT
-   ============================== */
-
+window.gameRenderer =
+renderer;
+/* ======================================================
+   LIGHTING
+====================================================== */
 const sun =
 new THREE.DirectionalLight(
   0xffffff,
-  2
+  2.2
 );
-
 sun.position.set(
-  20,
-  30,
-  10
+  25,
+  40,
+  15
 );
-
 scene.add(sun);
-
-scene.add(
-  new THREE.AmbientLight(
-    0xffffff,
-    0.7
-  )
+const ambient =
+new THREE.HemisphereLight(
+  0xffffff,
+  0x445566,
+  1.2
 );
-
-
-/* ==============================
+scene.add(ambient);
+/* ======================================================
    GROUND
-   ============================== */
-
+====================================================== */
 const ground =
 new THREE.Mesh(
-
   new THREE.PlaneGeometry(
     120,
     120
   ),
-
   new THREE.MeshStandardMaterial({
-    color:0x477d3c
+    color:0x477d3c,
+    roughness:0.9
   })
-
 );
-
 ground.rotation.x =
 -Math.PI / 2;
-
 scene.add(ground);
-
-
-/* ==============================
+/* ======================================================
    LOBBY FLOOR
-   ============================== */
-
+====================================================== */
 const floor =
 new THREE.Mesh(
-
-  new THREE.CircleGeometry(
+  new THREE.CylinderGeometry(
     15,
+    15,
+    0.3,
     48
   ),
-
   new THREE.MeshStandardMaterial({
-    color:0x777777
+    color:0x666b72,
+    roughness:0.8
   })
-
 );
-
-floor.rotation.x =
--Math.PI / 2;
-
 floor.position.y =
-0.02;
-
+-0.15;
 scene.add(floor);
-
-
-/* ==============================
+/* ======================================================
    BUILDINGS
-   ============================== */
-
+====================================================== */
 function makeBuilding(
   x,
   z,
@@ -608,31 +380,27 @@ function makeBuilding(
   h,
   d
 ){
-
   const building =
   new THREE.Mesh(
-
     new THREE.BoxGeometry(
       w,
       h,
       d
     ),
-
     new THREE.MeshStandardMaterial({
-      color:0xb5b0a5
+      color:0xb5b0a5,
+      roughness:0.8
     })
-
   );
-
   building.position.set(
     x,
     h / 2,
     z
   );
-
-  scene.add(building);
+  scene.add(
+    building
+  );
 }
-
 makeBuilding(
   -22,
   -15,
@@ -640,7 +408,6 @@ makeBuilding(
   8,
   12
 );
-
 makeBuilding(
   22,
   -15,
@@ -648,7 +415,6 @@ makeBuilding(
   10,
   12
 );
-
 makeBuilding(
   -25,
   20,
@@ -656,7 +422,6 @@ makeBuilding(
   7,
   14
 );
-
 makeBuilding(
   25,
   20,
@@ -664,68 +429,53 @@ makeBuilding(
   9,
   14
 );
-
-
-/* ==============================
+/* ======================================================
    TREES
-   ============================== */
-
+====================================================== */
 function makeTree(
   x,
   z
 ){
-
   const trunk =
   new THREE.Mesh(
-
     new THREE.CylinderGeometry(
-      .3,
-      .45,
+      0.3,
+      0.45,
       3,
       8
     ),
-
     new THREE.MeshStandardMaterial({
       color:0x704522
     })
-
   );
-
   trunk.position.set(
     x,
     1.5,
     z
   );
-
-  scene.add(trunk);
-
-
+  scene.add(
+    trunk
+  );
   const leaves =
   new THREE.Mesh(
-
     new THREE.SphereGeometry(
       1.7,
       12,
       12
     ),
-
     new THREE.MeshStandardMaterial({
       color:0x257d32
     })
-
   );
-
   leaves.position.set(
     x,
     4,
     z
   );
-
-  scene.add(leaves);
-
+  scene.add(
+    leaves
+  );
 }
-
-
 [
   [-10,-12],
   [10,-12],
@@ -739,271 +489,468 @@ function makeTree(
     p[1]
   )
 );
-
-
-/* ==============================
-   PLAYER
-   ============================== */
-
+/* ======================================================
+   LAWANG CHARACTER
+   ====================================================== */
 const player =
 new THREE.Group();
-
+player.name =
+"LAWANG_PLAYER";
 player.position.set(
   0,
   0,
-  8
+  5
 );
-
-scene.add(player);
-
-
-/* ==============================
-   BODY
-   ============================== */
-
+scene.add(
+  player
+);
+window.gamePlayer =
+player;
+/* CHARACTER PARTS */
+const parts = {};
+window.gameParts =
+parts;
+/* ======================================================
+   SKIN
+   Medium skin tone
+====================================================== */
+const skinMaterial =
+new THREE.MeshStandardMaterial({
+  color:0xc98f6b,
+  roughness:0.75
+});
+/* ======================================================
+   BLACK JACKET
+====================================================== */
+const jacketMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x111318,
+  roughness:0.55,
+  metalness:0.05
+});
 const body =
 new THREE.Mesh(
-
   new THREE.BoxGeometry(
-    1,
-    1.7,
-    .6
+    1.05,
+    1.65,
+    0.62
   ),
-
-  new THREE.MeshStandardMaterial({
-    color:0x111111
-  })
-
+  jacketMaterial
 );
-
 body.position.y =
-2;
-
-player.add(body);
-
-
-/* ==============================
+2.0;
+player.add(
+  body
+);
+parts.body =
+body;
+/* ======================================================
+   NECK
+====================================================== */
+const neck =
+new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    0.18,
+    0.2,
+    0.28,
+    16
+  ),
+  skinMaterial
+);
+neck.position.y =
+2.88;
+player.add(
+  neck
+);
+/* ======================================================
    HEAD
-   ============================== */
-
+====================================================== */
 const head =
 new THREE.Mesh(
-
   new THREE.SphereGeometry(
-    .48,
+    0.48,
     24,
-    24
+    20
   ),
-
-  new THREE.MeshStandardMaterial({
-    color:0xd79a72
-  })
-
+  skinMaterial
 );
-
+head.scale.set(
+  0.92,
+  1.08,
+  0.9
+);
 head.position.y =
-3.15;
-
-player.add(head);
-
-
-/* ==============================
-   HAIR
-   ============================== */
-
+3.35;
+player.add(
+  head
+);
+parts.head =
+head;
+/* ======================================================
+   BLACK HAIR
+====================================================== */
+const hairMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x090909,
+  roughness:0.7
+});
 const hair =
 new THREE.Mesh(
-
   new THREE.SphereGeometry(
-    .49,
+    0.5,
     24,
-    12,
+    16,
     0,
     Math.PI * 2,
     0,
-    Math.PI * .45
+    Math.PI * 0.48
   ),
-
-  new THREE.MeshStandardMaterial({
-    color:0x151515
-  })
-
+  hairMaterial
 );
-
+hair.scale.set(
+  1,
+  0.9,
+  1
+);
 hair.position.y =
-3.35;
-
-player.add(hair);
-
-
-/* ==============================
-   LEGS
-   ============================== */
-
-const legMaterial =
+3.55;
+player.add(
+  hair
+);
+parts.hair =
+hair;
+/* ======================================================
+   EYES — CHOCOLATE COLOR
+====================================================== */
+const eyeMaterial =
 new THREE.MeshStandardMaterial({
-  color:0x111111
+  color:0x3b2115,
+  roughness:0.25
 });
-
+function createEye(
+  x
+){
+  const eye =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      0.055,
+      12,
+      12
+    ),
+    eyeMaterial
+  );
+  eye.position.set(
+    x,
+    3.38,
+    -0.435
+  );
+  player.add(
+    eye
+  );
+  return eye;
+}
+parts.leftEye =
+createEye(-0.17);
+parts.rightEye =
+createEye(0.17);
+/* ======================================================
+   NO BEARD
+====================================================== */
+/* ======================================================
+   BLACK PANTS
+====================================================== */
+const pantsMaterial =
+new THREE.MeshStandardMaterial({
+  color:0x090b0f,
+  roughness:0.7
+});
 const leftLeg =
 new THREE.Mesh(
-
   new THREE.BoxGeometry(
-    .28,
+    0.30,
     1.2,
-    .35
+    0.36
   ),
-
-  legMaterial
-
+  pantsMaterial
 );
-
 leftLeg.position.set(
-  -.22,
-  .6,
+  -0.23,
+  0.6,
   0
 );
-
-player.add(leftLeg);
-
-
+player.add(
+  leftLeg
+);
+parts.leftLeg =
+leftLeg;
 const rightLeg =
 new THREE.Mesh(
-
   new THREE.BoxGeometry(
-    .28,
+    0.30,
     1.2,
-    .35
+    0.36
   ),
-
-  legMaterial
-
+  pantsMaterial
 );
-
 rightLeg.position.set(
-  .22,
-  .6,
+  0.23,
+  0.6,
   0
 );
-
-player.add(rightLeg);
-
-
-/* ==============================
-   ARMS
-   ============================== */
-
-const armMaterial =
+player.add(
+  rightLeg
+);
+parts.rightLeg =
+rightLeg;
+/* ======================================================
+   BLACK SHOES
+====================================================== */
+const shoeMaterial =
 new THREE.MeshStandardMaterial({
-  color:0x111111
+  color:0x050505,
+  roughness:0.55
 });
-
-
+const leftShoe =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    0.34,
+    0.18,
+    0.55
+  ),
+  shoeMaterial
+);
+leftShoe.position.set(
+  -0.23,
+  0.09,
+  -0.08
+);
+player.add(
+  leftShoe
+);
+const rightShoe =
+leftShoe.clone();
+rightShoe.position.x =
+0.23;
+player.add(
+  rightShoe
+);
+/* ======================================================
+   ARMS
+====================================================== */
 const leftArm =
 new THREE.Mesh(
-
   new THREE.BoxGeometry(
-    .25,
-    1.2,
-    .25
+    0.27,
+    1.18,
+    0.27
   ),
-
-  armMaterial
-
+  jacketMaterial
 );
-
 leftArm.position.set(
-  -.7,
-  2,
+  -0.68,
+  2.0,
   0
 );
-
-player.add(leftArm);
-
-
+player.add(
+  leftArm
+);
+parts.leftArm =
+leftArm;
 const rightArm =
 new THREE.Mesh(
-
   new THREE.BoxGeometry(
-    .25,
-    1.2,
-    .25
+    0.27,
+    1.18,
+    0.27
   ),
-
-  armMaterial
-
+  jacketMaterial
 );
-
 rightArm.position.set(
-  .7,
-  2,
+  0.68,
+  2.0,
   0
 );
-
-player.add(rightArm);
-
-
-/* ==============================
-   EXPORT GAME OBJECTS
-   FOR game.js
-   ============================== */
-
-window.gameScene =
-scene;
-
-window.gameCamera =
-camera;
-
-window.gameRenderer =
-renderer;
-
-window.gamePlayer =
-player;
-
-window.gameParts = {
-
-  body,
-  head,
-  hair,
-
-  leftLeg,
-  rightLeg,
-
-  leftArm,
+player.add(
   rightArm
-
-};
-
-
-/* ==============================
-   RESIZE
-   ============================== */
-
+);
+parts.rightArm =
+rightArm;
+/* ======================================================
+   HANDS
+====================================================== */
+const leftHand =
+new THREE.Mesh(
+  new THREE.SphereGeometry(
+    0.16,
+    12,
+    12
+  ),
+  skinMaterial
+);
+leftHand.position.set(
+  -0.68,
+  1.38,
+  0
+);
+player.add(
+  leftHand
+);
+const rightHand =
+leftHand.clone();
+rightHand.position.x =
+0.68;
+player.add(
+  rightHand
+);
+/* ======================================================
+   SIMPLE GUN
+====================================================== */
+const gun =
+new THREE.Group();
+const gunBody =
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    0.18,
+    0.25,
+    1.1
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x202020,
+    metalness:0.7,
+    roughness:0.3
+  })
+);
+gun.add(
+  gunBody
+);
+const barrel =
+new THREE.Mesh(
+  new THREE.CylinderGeometry(
+    0.055,
+    0.055,
+    0.55,
+    10
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x111111,
+    metalness:0.8
+  })
+);
+barrel.rotation.x =
+Math.PI / 2;
+barrel.position.z =
+-0.7;
+gun.add(
+  barrel
+);
+gun.position.set(
+  0.48,
+  1.9,
+  -0.45
+);
+gun.rotation.x =
+-0.15;
+player.add(
+  gun
+);
+/* ======================================================
+   HANDLE RESIZE
+====================================================== */
+function resize(){
+  camera.aspect =
+    innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
+}
 window.addEventListener(
   "resize",
+  resize
+);
+resize();
+/* ======================================================
+   START GAME.JS
+====================================================== */
+window.gameReady =
+true;
+/*
+  game.js will take over
+  the actual movement,
+  camera, aircraft,
+  weapons, enemies,
+  joystick and game loop.
+*/
+const loading =
+document.getElementById(
+  "loading"
+);
+if(loading){
+  loading.style.display =
+    "none";
+}
+/* ======================================================
+   LOAD GAME.JS — ONLY ONCE
+====================================================== */
+const script =
+document.createElement(
+  "script"
+);
+script.type =
+  "module";
+script.src =
+  "./game.js";
+document.body.appendChild(
+  script
+);
+/* ======================================================
+   AIRCRAFT BUTTON
+====================================================== */
+document.getElementById(
+  "planeButton"
+).addEventListener(
+  "click",
   () => {
-
-    camera.aspect =
-      innerWidth / innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      innerWidth,
-      innerHeight
-    );
-
+    document.getElementById(
+      "battlePanel"
+    ).style.display =
+      "none";
+    if(
+      window.lawangStartAircraft
+    ){
+      window.lawangStartAircraft();
+    }else{
+      console.warn(
+        "LAWANG: game.js ابھی load ہو رہا ہے..."
+      );
+      setTimeout(
+        () => {
+          if(
+            window.lawangStartAircraft
+          ){
+            window.lawangStartAircraft();
+          }
+        },
+        500
+      );
+    }
   }
 );
-
-
-/* ==============================
-   CONNECT GAME.JS
-   ============================== */
-
-import "./game.js";
-
+/* ======================================================
+   BATTLE MENU
+====================================================== */
+document.getElementById(
+  "closeBattle"
+).addEventListener(
+  "click",
+  () => {
+    document.getElementById(
+      "battlePanel"
+    ).style.display =
+      "none";
+  }
+);
 </script>
-
 </body>
 </html>
