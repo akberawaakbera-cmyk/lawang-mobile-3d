@@ -994,15 +994,27 @@ battlePanel.style.display=
 );
 
 document.getElementById(
-"planeButton"
+  "planeButton"
 ).addEventListener(
-"click",
-()=>{
+  "click",
+  () => {
 
-document.getElementById(
-"battleMessage"
-).textContent=
-"Aircraft system will start in the next version.";
+    document.getElementById(
+      "battlePanel"
+    ).style.display = "none";
+
+    if (
+      window.lawangStartAircraft
+    ) {
+      window.lawangStartAircraft();
+    } else {
+      console.error(
+        "LAWANG: startMatch connection missing"
+      );
+    }
+
+  }
+);
 
 }
 );
