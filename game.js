@@ -1778,282 +1778,173 @@ if (
   
     function createAircraft() {
 
-  let aircraft = scene.getObjectByName(
-    "LAWANG_AIRCRAFT"
-  );
+  let aircraft = scene.getObjectByName("LAWANG_AIRCRAFT");
 
   if (aircraft) {
     return aircraft;
   }
 
-  const plane = new THREE.Group();
+  aircraft = new THREE.Group();
+  aircraft.name = "LAWANG_AIRCRAFT";
 
-  plane.name = "LAWANG_AIRCRAFT";
-
-  /* BODY */
-
+  // Main body
   const body = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      3.2,
-      1.6,
-      10
-    ),
+    new THREE.BoxGeometry(3, 1, 8),
     new THREE.MeshStandardMaterial({
-      color: 0x3d4652,
-      metalness: 0.65,
-      roughness: 0.3
+      color: 0x555555,
+      metalness: 0.4,
+      roughness: 0.5
     })
   );
 
-  body.position.y = 0;
+  aircraft.add(body);
 
-  plane.add(body);
-
-
-  /* NOSE */
-
-  const nose = new THREE.Mesh(
-    new THREE.SphereGeometry(
-      1.6,
-      24,
-      12
-    ),
+  // Left wing
+  const leftWing = new THREE.Mesh(
+    new THREE.BoxGeometry(7, 0.25, 1.5),
     new THREE.MeshStandardMaterial({
-      color: 0x505b68,
-      metalness: 0.7
+      color: 0x777777
     })
   );
 
-  nose.scale.z = 1.5;
+  leftWing.position.x = -3.5;
+  aircraft.add(leftWing);
 
-  nose.position.z = -5;
+  // Right wing
+  const rightWing = leftWing.clone();
 
-  plane.add(nose);
+  rightWing.position.x = 3.5;
+  aircraft.add(rightWing);
 
-
-  /* WINGS */
-
-  const wing = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      15,
-      0.25,
-      2.2
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0x303943,
-      metalness: 0.65
-    })
-  );
-
-  wing.position.y = 0;
-
-  plane.add(wing);
-
-
-  /* TAIL */
-
+  // Tail
   const tail = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      5,
-      0.2,
-      1.5
-    ),
+    new THREE.BoxGeometry(2, 1.8, 1),
     new THREE.MeshStandardMaterial({
-      color: 0x303943
+      color: 0x444444
     })
   );
 
-  tail.position.set(
+  tail.position.z = 3.2;
+  tail.position.y = 0.7;
+
+  aircraft.add(tail);
+
+  // Aircraft position
+  aircraft.position.set(
     0,
-    0.2,
-    4.5
+    20,
+    -10
   );
 
-  plane.add(tail);
+  scene.add(aircraft);
 
+  console.log("LAWANG AIRCRAFT CREATED");
 
-  /* VERTICAL TAIL */
+  return aircraft;
+}
+function startMatch() {
 
-  const verticalTail = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      0.25,
-      2.5,
-      2
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0x303943
-    })
-  );
+  console.log("LAWANG: MATCH START");
 
-  verticalTail.position.set(
-    0,
-    1.2,
-    4
-  );
+  /* ==============================
+     GAME STATE
+     ============================== */
 
-  plane.add(verticalTail);
+  state.phase = "AIRCRAFT";
 
+  state.hp = 100;
+  state.kills = 0;
+  state.score = 0;
 
-  /* WINDOWS */
+  state.firing = false;
+  state.reloading = false;
+  state.running = false;
+  state.crouching = false;
 
-  const windowMaterial =
-    new THREE.MeshStandardMaterial({
-      color: 0x061a2b,
-      metalness: 0.8,
-      roughness: 0.15
-    });
+  /* ==============================
+     CREATE AIRCRAFT
+     ============================== */
 
-  for (let i = -3; i <= 3; i++) {
+  const aircraft = createAircraft();
 
-    const leftWindow =
-      new THREE.Mesh(
-        new THREE.BoxGeometry(
-          0.08,
-          0.55,
-          0.75
-        ),
-        windowMaterial
-      );
+  aircraft.visible = true;
 
-    leftWindow.position.set(
-      -1.63,
-      0.25,
-      i * 1.1
-    );
-
-    plane.add(leftWindow);
-
-
-    const rightWindow =
-      new THREE.Mesh(
-        new THREE.BoxGeometry(
-          0.08,
-          0.55,
-          0.75
-        ),
-        windowMaterial
-      );
-
-    rightWindow.position.set(
-      1.63,
-      0.25,
-      i * 1.1
-    );
-
-    plane.add(rightWindow);
-  }
-
-
-  /* ENGINES */
-
-  for (const side of [-1, 1]) {
-
-    const engine = new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        0.55,
-        0.65,
-        2.2,
-        16
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x171b20,
-        metalness: 0.8
-      })
-    );
-
-    engine.rotation.x =
-      Math.PI / 2;
-
-    engine.position.set(
-      side * 4,
-      -0.45,
-      -0.7
-    );
-
-    plane.add(engine);
-  }
-
-
-  /* PROP / ENGINE EFFECT */
-
-  const engineLight =
-    new THREE.PointLight(
-      0xffaa33,
-      2,
-      8
-    );
-
-  engineLight.position.set(
-    0,
-    0,
-    5
-  );
-
-  plane.add(engineLight);
-
-
-  /* INTERIOR */
-
-  const interior =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        2.7,
-        1.3,
-        7.5
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x151a20,
-        side: THREE.BackSide
-      })
-    );
-
-  interior.position.y = 0;
-
-  plane.add(interior);
-
-
-  /* FLOOR */
-
-  const floor =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        2.5,
-        0.15,
-        7
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x252a31
-      })
-    );
-
-  floor.position.y = -0.75;
-
-  plane.add(floor);
-
-
-  /* AIRCRAFT POSITION */
-
-  plane.position.set(
+  aircraft.position.set(
     0,
     30,
     0
   );
-/* PLAYER SEAT */
 
-const seat = new THREE.Group();
+  aircraft.rotation.set(
+    0,
+    0,
+    0
+  );
 
-seat.name = "PLAYER_SEAT";
+  /* ==============================
+     PLAYER ENTERS AIRCRAFT
+     ============================== */
 
-seat.position.set(
-  0,
-  -0.45,
-  1
-);
+  player.visible = true;
 
-plane.add(seat);
-  scene.add(plane);
+  player.userData.inAircraft = true;
 
-  return plane;
+  /*
+     Player is placed inside
+     the aircraft cabin.
+  */
+
+  player.position.set(
+    0,
+    30,
+    -1
+  );
+
+  player.rotation.y = Math.PI;
+
+  /* ==============================
+     CAMERA INSIDE AIRCRAFT
+     ============================== */
+
+  camera.position.set(
+    3,
+    33,
+    4
+  );
+
+  camera.lookAt(
+    0,
+    31,
+    -5
+  );
+
+  /* ==============================
+     AIRCRAFT MODE
+     ============================== */
+
+  state.aircraftTime = 0;
+
+  state.canJumpFromAircraft = true;
+
+  state.aircraftMoving = true;
+
+  /* ==============================
+     HUD
+     ============================== */
+
+  const status =
+    document.getElementById("status");
+
+  if (status) {
+    status.textContent =
+      "✈️ INSIDE AIRCRAFT";
+  }
+
+  updateHUD();
+
+  console.log(
+    "LAWANG: Player is inside aircraft"
+  );
 }
 function createAircraftFriends() {
 
